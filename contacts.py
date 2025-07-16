@@ -57,7 +57,7 @@ class Birthday(Field):
 class Email(Field):
     def __init__(self, email: str):
         email = email.strip()
-        self.value = email
+        super().__init__(email)
                 
     def __str__(self):
         return f"{self.value}"
@@ -66,7 +66,7 @@ class Email(Field):
 class Address(Field):
     def __init__(self, address: str):
         address = address.strip()
-        self.value = address
+        super().__init__(address)
                 
     def __str__(self):
         return f"{self.value}"
@@ -127,7 +127,7 @@ class Record:
     
     def add_address(self, address: str):
         address = address.strip()
-        self.email = Email(address)
+        self.address = Address(address)
     
     def __str__(self):
         return f"Contact name: {self.name}, phones: {self.phones}, birthday: {self.birthday}, email: {self.email}, address: {self.address}"
