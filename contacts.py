@@ -206,20 +206,59 @@ class NoteRecord:
         return (f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
                 f"Created: {self.date_created}\nModified: {self.date_modified}")
 
+# Клас для списка нотаток
+
+class NotesBook(UserDict):
+    def __init__(self, dict: Dict[str, Record]):
+        self.data = dict
+
+    def add_note(self, record: NoteRecord):
+        self.data[record.id] = record
+
+    def get_note(self, note_id):
+            return self.data.get(note_id)
+
+    def delete_note(self, note_id):
+        if note_id in self.data:
+            del self.data[note_id]
+            return True
+        return False
+
+    def edit_note(self, note_id, new_title=None, new_text=None):
+        note = self.get_note(note_id)
+        if note:
+            note.modify(new_title, new_text)
+            return True
+        return False
+
 def main():
-    # notes = NotesBook()
+    notes = NotesBook({})
 
-    record1 = NoteRecord(title='', text="John was a huge size")
-    record1.modify(new_title="John...")
-    print(record1)
+    record1 = NoteRecord(title='John...', text="Lorem ipsum dolor sit amet")
+    record1.modify(new_title="John")
+    record2 = NoteRecord(title='', text="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Adipisci maxime beatae illo eveniet rem, possimus distinctio harum assumenda consectetur. Magni assumenda sint consequuntur dolorum repellendus cum nobis unde, iusto vero eos voluptatum suscipit atque omnis cumque impedit ab, laborum nam, sapiente totam blanditiis animi corporis voluptatem in! Laboriosam, in nulla?")
+    record2.modify(new_text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, iusto.")
 
-    record2 = NoteRecord(title='', text="Lorem  ")
-    print(record1)
+    notes.add_note(record1)
+    notes.add_note(record2)
 
-    # notes.add_note(record1)
+    # for key in notes.data:
+    #     print(key)
+    #     print(notes.data[key])
+    for i in range(1, 3):
+        print(notes.get_note(i))
+    
+    notes.edit_note(1, new_title="edited_title")
+    notes.edit_note(2, new_text="Lorem ipsum dolor sit")
+    for i in range(1, 3):
+        print(notes.get_note(i))
+    
+    notes.delete_note(1)
+    notes.delete_note(2)
 
-    # jane_record = Record("Jane")
-    # jane_record.add_phone("9876543210")
+    for i in range(1, 3):
+        print(notes.get_note(i))
+
 
 if __name__ == "__main__":
     main()
