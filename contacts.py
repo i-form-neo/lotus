@@ -160,74 +160,66 @@ class AddressBook(UserDict):
     def __str__(self):
         return '\n'.join(str(rec) for rec in self.data.values())
 
-    # Клас для поля Title
+# Клас для поля Title
 
-    class Title(Field):
-        """
-        Клас Title представляє поле заголовка нотатки
-        """
-        def __str__(self):
-            return self.value
+class Title(Field):
+    """
+    Клас Title представляє поле заголовка нотатки
+    """
+    def __str__(self):
+        return self.value
 
-    # Клас для поля Note
+# Клас для поля Note
 
-    class Note(Field):
-        """
-        Клас Note представляє поле самого тексту нотатки
-        """
-        def __str__(self):
-            return self.value
+class Note(Field):
+    """
+    Клас Note представляє поле самого тексту нотатки
+    """
+    def __str__(self):
+        return self.value
 
-    # Клас для нотатки
+# Клас для нотатки
 
-    class NoteRecord:
-        """
-        Клас NoteRecord представляє запис однієї нотатки. Поле
-        id реалізовано за допомогою атрибуту класа.
-        """
-        _id_counter = 1
+class NoteRecord:
+    """
+    Клас NoteRecord представляє запис однієї нотатки. Поле
+    id реалізовано за допомогою атрибуту класа.
+    """
+    _id_counter = 1
 
-        def __init__(self, title=None, text=""):
-            self.id = NoteRecord._id_counter
-            NoteRecord._id_counter += 1
-            self.title = Title(title if title is not None else "Без назви")
-            self.text = Note(text)
-            self.date_created = datetime.now()
-            self.date_modified = self.date_created
+    def __init__(self, title=None, text=""):
+        self.id = NoteRecord._id_counter
+        NoteRecord._id_counter += 1
+        self.title = Title(title if title is not None else "Без назви")
+        self.text = Note(text)
+        self.date_created = datetime.now()
+        self.date_modified = self.date_created
 
-        def modify(self, new_title=None, new_text=None):
-            if new_title:
-                self.title = Title(new_title)
-            if new_text:
-                self.text = Note(new_text)
-            self.date_modified = datetime.now()
+    def modify(self, new_title=None, new_text=None):
+        if new_title:
+            self.title = Title(new_title)
+        if new_text:
+            self.text = Note(new_text)
+        self.date_modified = datetime.now()
 
-        def __str__(self):
-            return (f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
-                    f"Created: {self.date_created}\nModified: {self.date_modified}")
+    def __str__(self):
+        return (f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
+                f"Created: {self.date_created}\nModified: {self.date_modified}")
 
-    # Клас для списку нотаток
+def main():
+    # notes = NotesBook()
 
-    class NotesBook(UserDict):
-        """
-        Клас NotesBook представляє увесь записник нотаток. 
-        За допомогою методів класу add_note(), get_note(), edit_note(), delete_note()
-        реалізовано управління нотатником
-        """
-        def add_note(self, title, text):
-            note = NoteRecord(title, text)
-            self.data[note.id] = note
-            return note
+    record1 = NoteRecord(title='', text="John was a huge size")
+    record1.modify(new_title="John...")
+    print(record1)
 
-        def get_note(self, note_id):
-            return self.data.get(note_id, None)
+    record2 = NoteRecord(title='', text="Lorem  ")
+    print(record1)
 
-        def edit_note(self, note_id, new_title=None, new_text=None):
-            note = self.get_note(note_id)
-            if note:
-                note.modify(new_title, new_text)
-                return True
-            return False
+    # notes.add_note(record1)
 
-        def delete_note(self, note_id):
-            return self.data.pop(note_id, None)
+    # jane_record = Record("Jane")
+    # jane_record.add_phone("9876543210")
+
+if __name__ == "__main__":
+    main()
