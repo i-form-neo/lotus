@@ -3,36 +3,14 @@
 from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
+from verification_phone_number import is_valid_ukrainian_phone
+
+# Базовий клас для поля
 
 
-def is_valid_ukrainian_phone(number):
-    """
-    Перевіряє номер телефону України у форматі +38XXXXXXXXXX.
-
-    Логіка:
-    - Видаляє всі пробіли з введеного рядка.
-    - Перевіряє, чи починається номер з '+38'.
-    - Перевіряє, що загальна довжина дорівнює 13 символів (+38 і 10 цифр).
-    - Перевіряє, що після '+38' всі символи є цифрами.
-
-    Повертає True, якщо номер валідний, інакше False.
-    """
-    number = number.replace(' ', '')
-
-    if not number.startswith("+38"):
-        return False
-
-    if len(number) != 13:
-        return False
-
-    if not number[3:].isdigit():
-        return False
-
-    return True
-  
 class Field:
     """Base class for field"""
-  
+
     def __init__(self, value):
         print(f"Field inited with {value}")
         self.value = value
@@ -58,8 +36,8 @@ class Phone(Field):
             raise ValueError(
                 "❌ Invalid phone number. It must start with +38 and contain exactly 10 digits."
             )
-        super().__init__((phone,info))
-        
+        super().__init__((phone, info))
+
     def __str__(self):
         return f"{self.value[0]} : {self.value[1]}"
 
@@ -84,25 +62,32 @@ class Birthday(Field):
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
-
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y") if self.value else "None"
-    
+
 # Клас для поля Email
+
+
 class Email(Field):
+    """Class for email field"""
+
     def __init__(self, email: str):
         email = email.strip()
         super().__init__(email)
-                
+
     def __str__(self):
         return f"{self.value}"
-    
+
 # Клас для поля Address
+
+
 class Address(Field):
+    """Class for address field"""
+
     def __init__(self, address: str):
         address = address.strip()
         super().__init__(address)
-                
+
     def __str__(self):
         return f"{self.value}"
 
@@ -118,8 +103,8 @@ class Record:
         self.name: Name = Name(name)
         self.phones: Phones = Phones({})
         self.birthday: Birthday | None = None
-        self.email: Email | None = None 
-        self.address: Address | None = None 
+        self.email: Email | None = None
+        self.address: Address | None = None
 
     # Метод: додає телефон в словник
     def add_phone(self, phone: str, info: str):
@@ -157,15 +142,14 @@ class Record:
         birthday = birthday.strip()
         self.birthday = Birthday(birthday)
 
-
     def add_email(self, email: str):
         email = email.strip()
         self.email = Email(email)
-    
+
     def add_address(self, address: str):
         address = address.strip()
         self.address = Address(address)
-    
+
     def __str__(self):
         return f"Contact name: {self.name}, phones: {self.phones}, birthday: {self.birthday}, email: {self.email}, address: {self.address}"
 
@@ -246,23 +230,24 @@ class AddressBook(UserDict):
 
 # Клас для поля Title
 
+
 class Title(Field):
-    """
-    Клас Title представляє поле заголовка нотатки
-    """
+    """Клас Title представляє поле заголовка нотатки"""
+
     def __str__(self):
         return self.value
 
 # Клас для поля Note
 
+
 class Note(Field):
-    """
-    Клас Note представляє поле самого тексту нотатки
-    """
+    """Клас Note представляє поле самого тексту нотатки"""
+
     def __str__(self):
         return self.value
 
 # Клас для нотатки
+
 
 class NoteRecord:
     """
@@ -292,11 +277,13 @@ class NoteRecord:
 
 # Клас для списка нотаток
 
+
 class NotesBook(UserDict):
     """
     Клас NotesBook представляє увесь записник. За допомогою методів класу add_note(), get_note(), edit_note(), delete_note()
         реалізовано управління нотатником.
     """
+
     def add_note(self, record: NoteRecord):
         """
         Метод add_note() приймає один агрумент типу NoteRecord
