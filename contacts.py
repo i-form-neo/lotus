@@ -209,56 +209,38 @@ class NoteRecord:
 # Клас для списка нотаток
 
 class NotesBook(UserDict):
-    def __init__(self, dict: Dict[str, Record]):
-        self.data = dict
-
+    """
+    Клас NotesBook представляє увесь записник. За допомогою методів класу add_note(), get_note(), edit_note(), delete_note()
+        реалізовано управління нотатником.
+    """
     def add_note(self, record: NoteRecord):
+        """
+        Метод add_note() приймає один агрумент типу NoteRecord
+        """
         self.data[record.id] = record
 
     def get_note(self, note_id):
-            return self.data.get(note_id)
+        """
+        Методи get_note() приймає один аргумент порядковий номер нотатки
+        """
+        return self.data.get(note_id)
 
     def delete_note(self, note_id):
+        """
+        Методи delete_note() приймає один аргумент порядковий номер нотатки
+        """
         if note_id in self.data:
             del self.data[note_id]
             return True
         return False
 
     def edit_note(self, note_id, new_title=None, new_text=None):
+        """
+        Метод edit_note() приймає один обов'язковий параметр id, та два ключових необов'язкових параметри
+        new_title, new_text, вказане поле залишається без змін, якщо нічого не передано
+        """
         note = self.get_note(note_id)
         if note:
             note.modify(new_title, new_text)
             return True
         return False
-
-def main():
-    notes = NotesBook({})
-
-    record1 = NoteRecord(title='John...', text="Lorem ipsum dolor sit amet")
-    record1.modify(new_title="John")
-    record2 = NoteRecord(title='', text="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Adipisci maxime beatae illo eveniet rem, possimus distinctio harum assumenda consectetur. Magni assumenda sint consequuntur dolorum repellendus cum nobis unde, iusto vero eos voluptatum suscipit atque omnis cumque impedit ab, laborum nam, sapiente totam blanditiis animi corporis voluptatem in! Laboriosam, in nulla?")
-    record2.modify(new_text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, iusto.")
-
-    notes.add_note(record1)
-    notes.add_note(record2)
-
-    # for key in notes.data:
-    #     print(key)
-    #     print(notes.data[key])
-    for i in range(1, 3):
-        print(notes.get_note(i))
-    
-    notes.edit_note(1, new_title="edited_title")
-    notes.edit_note(2, new_text="Lorem ipsum dolor sit")
-    for i in range(1, 3):
-        print(notes.get_note(i))
-    
-    notes.delete_note(1)
-    notes.delete_note(2)
-
-    for i in range(1, 3):
-        print(notes.get_note(i))
-
-
-if __name__ == "__main__":
-    main()
