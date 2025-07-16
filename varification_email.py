@@ -1,6 +1,5 @@
 
 #валідація емейл
-
 import re
 
 def is_valid_email(email):
@@ -9,10 +8,14 @@ def is_valid_email(email):
     pattern = r'^[\w\.\+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
-while True:
-    user_email = input("Enter your email: ").strip()
-    if is_valid_email(user_email):
-        print("✅ Email is valid, thank you!")
-        break
-    else:
-        print("❌ Email is not valid. Try again")
+def main():
+    while True:
+        user_email = input("Enter your email: ").strip()
+        if is_valid_email(user_email):
+            print("✅ Email is valid, thank you!")
+            break
+        else:
+            print("❌ Email is not valid. Try again")
+
+if __name__ == "__main__":
+    main()
