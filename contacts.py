@@ -87,6 +87,25 @@ class Birthday(Field):
 
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y") if self.value else "None"
+    
+# Клас для поля Email
+class Email(Field):
+    def __init__(self, email: str):
+        email = email.strip()
+        super().__init__(email)
+                
+    def __str__(self):
+        return f"{self.value}"
+    
+# Клас для поля Address
+class Address(Field):
+    def __init__(self, address: str):
+        address = address.strip()
+        super().__init__(address)
+                
+    def __str__(self):
+        return f"{self.value}"
+
 
 # Клас для запису в книзі
 
@@ -99,6 +118,8 @@ class Record:
         self.name: Name = Name(name)
         self.phones: Phones = Phones({})
         self.birthday: Birthday | None = None
+        self.email: Email | None = None 
+        self.address: Address | None = None 
 
     # Метод: додає телефон в словник
     def add_phone(self, phone: str, info: str):
@@ -136,8 +157,17 @@ class Record:
         birthday = birthday.strip()
         self.birthday = Birthday(birthday)
 
+
+    def add_email(self, email: str):
+        email = email.strip()
+        self.email = Email(email)
+    
+    def add_address(self, address: str):
+        address = address.strip()
+        self.address = Address(address)
+    
     def __str__(self):
-        return f"Contact name: {self.name}, phones: {self.phones}, birthday: {self.birthday}"
+        return f"Contact name: {self.name}, phones: {self.phones}, birthday: {self.birthday}, email: {self.email}, address: {self.address}"
 
 
 class AddressBook(UserDict):

@@ -4,6 +4,7 @@ from typing import Dict, Tuple, List
 
 import pickle
 import pathlib
+import shlex
 
 from rich.console import Console
 from prompt_toolkit import PromptSession
@@ -43,6 +44,8 @@ def write_dict(path: pathlib.Path, dictionary: Dict[str, Record]):
 commands = {
     "add-phone": 2,
     "add-birthday": 2,
+    "add-email": 2,
+    "add-address": 2,
     "change": 3,
     "all": 0,
     "phone": 1,
@@ -145,6 +148,33 @@ def main():
             record.add_birthday(birthday)
             book.add_record(name, record)
         return True, f"Birthday {birthday} to {name} added"
+    
+    # Handler: add-email name email
+    @writer
+    @verbose
+    def add_email(name: str, email: str, *args) -> Tuple[bool, str]:
+        record = book.find_record(name)
+        if record:
+            record.add_email(email)
+        else:
+            record = Record(name)
+            record.add_email(email)
+            book.add_record(name, record)
+        return True, f"Email {email} to {name} added"
+    
+    # Handler: add-address name address
+    @writer
+    @verbose
+    def add_address(name: str, address: str, *args) -> Tuple[bool, str]:
+        record = book.find_record(name)
+        if record:
+            record.add_address(address)
+        else:
+            record = Record(name)
+            record.add_address(address)
+            book.add_record(name, record)
+        return True, f"Address {address} to {name} added"
+        
 
     # Handler: all - виводить всі контакти
     @verbose
@@ -193,7 +223,9 @@ def main():
     @validate
     def parse_input(msg_prompt: str) -> List[str]:
         msg = session.prompt(msg_prompt)
-        cmd = msg.split()
+
+        #cmd = msg.split() 
+        cmd = shlex.split(msg)
         return cmd
 
     def print_help():
@@ -214,6 +246,10 @@ def main():
                     add(name, phone)
                 case ['add-birthday', name, birthday]:
                     add_birthday(name, birthday)
+                case ['add-email', name, email]:
+                    add_email(name, email)
+                case ['add-address', name, address]:
+                    add_address(name, address)
                 case ['change', name, old_phone, new_phone]:
                     change(name, old_phone, new_phone)
                 case ['all']:
