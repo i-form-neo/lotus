@@ -2,6 +2,31 @@ from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
 
+def is_valid_ukrainian_phone(number):
+    """
+    Перевіряє номер телефону України у форматі +38XXXXXXXXXX.
+
+    Логіка:
+    - Видаляє всі пробіли з введеного рядка.
+    - Перевіряє, чи починається номер з '+38'.
+    - Перевіряє, що загальна довжина дорівнює 13 символів (+38 і 10 цифр).
+    - Перевіряє, що після '+38' всі символи є цифрами.
+
+    Повертає True, якщо номер валідний, інакше False.
+    """
+    number = number.replace(' ', '')
+
+    if not number.startswith("+38"):
+        return False
+
+    if len(number) != 13:
+        return False
+
+    if not number[3:].isdigit():
+        return False
+
+    return True
+
 # Базовий клас для поля
 class Field:
     def __init__(self, value):
@@ -16,10 +41,11 @@ class Name(Field):
 class Phone(Field):
     def __init__(self, phone: str, info: str):
         phone = phone.strip()
-        if  len(phone) == 10 and phone.isdigit():
-            self.value = (phone, info)
-        else:
-            raise ValueError("Phone must be numeric and len == 10")
+        if not is_valid_ukrainian_phone(phone):
+            raise ValueError(
+                "❌ Invalid phone number. It must start with +38 and contain exactly 10 digits."
+            )
+        super().__init__((phone,info))
         
     def __str__(self):
         return f"{self.value[0]} : {self.value[1]}"
