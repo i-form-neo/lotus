@@ -1,31 +1,7 @@
 from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
-
-def is_valid_ukrainian_phone(number):
-    """
-    Перевіряє номер телефону України у форматі +38XXXXXXXXXX.
-
-    Логіка:
-    - Видаляє всі пробіли з введеного рядка.
-    - Перевіряє, чи починається номер з '+38'.
-    - Перевіряє, що загальна довжина дорівнює 13 символів (+38 і 10 цифр).
-    - Перевіряє, що після '+38' всі символи є цифрами.
-
-    Повертає True, якщо номер валідний, інакше False.
-    """
-    number = number.replace(' ', '')
-
-    if not number.startswith("+38"):
-        return False
-
-    if len(number) != 13:
-        return False
-
-    if not number[3:].isdigit():
-        return False
-
-    return True
+from verification_phone_number import is_valid_ukrainian_phone
 
 # Базовий клас для поля
 class Field:
