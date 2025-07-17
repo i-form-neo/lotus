@@ -1,9 +1,9 @@
-
-#валідація емейл
+"""Module for email validation"""
 import re
 
+
 def is_valid_email(email):
-     """
+    """
     Перевіряє email-адресу за допомогою регулярного виразу.
 
     Шаблон перевіряє:
@@ -18,7 +18,9 @@ def is_valid_email(email):
     pattern = r'^[\w\.\+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
 
+
 def main():
+    """Method for internal testing"""
     while True:
         user_email = input("Enter your email: ").strip()
         if is_valid_email(user_email):
@@ -26,6 +28,7 @@ def main():
             break
         else:
             print("❌ Email is not valid. Try again")
+
 
 if __name__ == "__main__":
     main()

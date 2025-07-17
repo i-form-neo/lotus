@@ -115,7 +115,7 @@ def main():
     # Handler: add name phone - додає новий контакт
     @writer
     @verbose
-    def add(name: str, phone: str) -> Tuple[bool, str]:
+    def add(name: str, phone: str, *args) -> Tuple[bool, str]:
         record = book.find_record(name)
         if record:
             record.add_phone(phone, "")
@@ -139,7 +139,7 @@ def main():
     # Handler: add-birthday name dd.mm.yyyy
     @writer
     @verbose
-    def add_birthday(name: str, birthday: str) -> Tuple[bool, str]:
+    def add_birthday(name: str, birthday: str, *args) -> Tuple[bool, str]:
         record = book.find_record(name)
         if record:
             record.add_birthday(birthday)
@@ -148,7 +148,7 @@ def main():
             record.add_birthday(birthday)
             book.add_record(name, record)
         return True, f"Birthday {birthday} to {name} added"
-    
+
     # Handler: add-email name email
     @writer
     @verbose
@@ -161,7 +161,7 @@ def main():
             record.add_email(email)
             book.add_record(name, record)
         return True, f"Email {email} to {name} added"
-    
+
     # Handler: add-address name address
     @writer
     @verbose
@@ -174,18 +174,18 @@ def main():
             record.add_address(address)
             book.add_record(name, record)
         return True, f"Address {address} to {name} added"
-        
 
     # Handler: all - виводить всі контакти
+
     @verbose
-    def print_all() -> Tuple[bool, str]:
+    def print_all(*args) -> Tuple[bool, str]:
         console.print("")
         console.print(str(book))
         return True, "[bold green]OK[/bold green]\n"
 
     # Handler: phone name - виводить телефони вказаного контакту
     @verbose
-    def print_phone(name: str):
+    def print_phone(name: str, *args):
         record = book.find_record(name)
         if record:
             console.print(f"Phones {record.name}:  {record.phones}")
@@ -195,7 +195,7 @@ def main():
 
     # Handler: phone name - виводить вказаний контакт
     @verbose
-    def show_birthday(name: str):
+    def show_birthday(name: str, *args):
         record = book.find_record(name)
         if record:
             console.print(f"Birthday {record.name}:  {record.birthday}")
@@ -205,7 +205,7 @@ def main():
 
     # Handler: birthdays - виводить дні народження наступного тижня
     @verbose
-    def birthdays():
+    def birthdays(*args):
         report = book.get_upcoming_birthdays()
         if report:
             console.print(report)
@@ -224,7 +224,7 @@ def main():
     def parse_input(msg_prompt: str) -> List[str]:
         msg = session.prompt(msg_prompt)
 
-        #cmd = msg.split() 
+        # cmd = msg.split()
         cmd = shlex.split(msg)
         return cmd
 

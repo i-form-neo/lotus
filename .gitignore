@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Custom and binary files
+.history
+contacts.pickle
+
 # C extensions
 *.so
 
