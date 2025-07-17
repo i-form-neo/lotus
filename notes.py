@@ -2,7 +2,26 @@
 
 from collections import UserDict
 from datetime import datetime#, timedelta
-from contacts import Field
+
+# Базовий клас для поля
+
+class Field:
+    """Base class for field"""
+
+    def __init__(self, value):
+        self._value = None
+        self.set_value(value)
+
+    def set_value(self, value):
+        """ setter for value"""
+        self._value = value
+
+    def get_value(self):
+        """ getter for value"""
+        return self._value
+
+    def __str__(self):
+        return str(self._value)
 
 # Клас для поля Title
 
