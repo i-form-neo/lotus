@@ -5,6 +5,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 from field import Field
 from verification_phone_number import is_valid_ukrainian_phone
+from verification_email import is_valid_email
 
 # Клас для поля Name
 
@@ -64,6 +65,8 @@ class Email(Field):
 
     def __init__(self, email: str):
         email = email.strip()
+        if not is_valid_email(email):
+            raise ValueError ("Invalid email address format")
         super().__init__(email)
 
     def __str__(self):
