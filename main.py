@@ -51,7 +51,7 @@ commands = {
     "all": 0,
     "phone": 1,
     "show-birthday": 1,
-    "birthdays": 0,
+    "birthdays": 1,
     "exit": 0,
     "quit": 0,
     "close": 0,
@@ -69,7 +69,7 @@ command_usage = {
     "all": 'Print all contacts (all)',
     "phone": 'Print phones: name (phone "John Dou")',
     "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
-    "birthdays": 'Print birthdays next week (birthdays)',
+    "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
     "exit": 'Close bot',
     "quit": 'Close bot',
     "close": 'Close bot',
@@ -225,7 +225,8 @@ def main():
     # Handler: birthdays - виводить дні народження наступного тижня
     @verbose
     def birthdays(*args):
-        report = book.get_upcoming_birthdays()
+        n_day = int(args[0])
+        report = book.get_upcoming_birthdays(n_day)
         if report:
             console.print(report)
             return True, "[bold green]OK[/bold green]\n"
@@ -277,8 +278,8 @@ def main():
                     print_phone(name)
                 case ['show-birthday', name]:
                     show_birthday(name)
-                case ['birthdays']:
-                    birthdays()
+                case ['birthdays', n_day]:
+                    birthdays(n_day)
                 case ['exit'] | ['quit'] | ['close']:
                     console.print("[bold green]Good bye![/bold green]")
                     break
