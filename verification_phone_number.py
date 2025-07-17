@@ -1,3 +1,6 @@
+"""Module for ukrainian phone number validation"""
+
+
 def is_valid_ukrainian_phone(number):
     """
     Перевіряє номер телефону України у форматі +38XXXXXXXXXX.
@@ -27,7 +30,10 @@ def is_valid_ukrainian_phone(number):
 
     return True
 
+
 def main():
+    """Method for internal testing"""
+
     while True:
         phone = input("Enter your phone number: ").strip()
         if is_valid_ukrainian_phone(phone):
@@ -35,6 +41,7 @@ def main():
             break
         else:
             print("❌ Invalid phone number. The number must start with +38 and contain exactly 10 digits (no spaces or extra symbols). Please try again.")
+
 
 if __name__ == "__main__":
     main()
