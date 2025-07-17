@@ -179,7 +179,7 @@ class AddressBook(UserDict):
         name = name.strip().lower()
         del self.data[name]
 
-    def get_upcoming_birthdays(self):
+    def get_upcoming_birthdays(self, n_day: int = 7):
         """Returns string representing list of Records whome to congratulate in next 7 days"""
         # Функція перевіряє чи дата потрапляє в потрібний інтервал дат
         def birthday_in_interval(record: Record, n_day) -> bool:
@@ -222,8 +222,8 @@ class AddressBook(UserDict):
             else:
                 return ""
 
-        # Формуємо список привітань на наступні 7 днів
-        return '\n'.join([make_congratulation_date(record) for record in self.data.values() if birthday_in_interval(record, 7)])
+        # Формуємо список привітань на наступні n_day днів
+        return '\n'.join([make_congratulation_date(record) for record in self.data.values() if birthday_in_interval(record, n_day)])
 
     def __str__(self):
         return '\n'.join(str(rec) for rec in self.data.values())
