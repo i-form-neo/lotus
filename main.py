@@ -13,6 +13,7 @@ from prompt_toolkit.history import FileHistory
 from contacts import AddressBook, Record
 
 
+
 def read_dict(path: pathlib.Path) -> Dict[str, Record]:
     """ Заванатажує довідник з файла
 
@@ -56,6 +57,24 @@ commands = {
     "close": 0,
     "hello": 0,
     "help": 0
+}
+
+# Команди та їхнє використання
+command_usage = {
+    "add-phone": 'Add new contact or phone: name phone (add-phone "John Dou" +380123334455)',
+    "add-birthday": 'Add or update birthday: name birthday (add-birthday "John Dou" 22.07.2000)',
+    "add-email": 'Add or update email: name email (add-email "John Dou" john.dou@example.com)',
+    "add-address": 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
+    "change": 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
+    "all": 'Print all contacts (all)',
+    "phone": 'Print phones: name (phone "John Dou")',
+    "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
+    "birthdays": 'Print birthdays next week (birthdays)',
+    "exit": 'Close bot',
+    "quit": 'Close bot',
+    "close": 'Close bot',
+    "hello": 'Hello bot',
+    "help": 'Print this usage'
 }
 
 
@@ -231,7 +250,7 @@ def main():
     def print_help():
         console.print("Available commands and their arities:")
         for k, v in commands.items():
-            console.print(f"    {k}/{v}")
+            console.print(f"    {k}/{v} -- {command_usage.get(k, '')}")
 
     console.print("[bold green]Welcome to the assistant bot![/bold green]")
     console.print(
