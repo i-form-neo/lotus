@@ -3,17 +3,8 @@
 from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
+from field import Field
 from verification_phone_number import is_valid_ukrainian_phone
-
-# Базовий клас для поля
-
-
-class Field:
-    """Base class for field"""
-
-    def __init__(self, value):
-        print(f"Field inited with {value}")
-        self.value = value
 
 # Клас для поля Name
 
