@@ -13,8 +13,7 @@ from prompt_toolkit.history import FileHistory
 from contacts import AddressBook, Record
 
 
-
-def read_dict(path: pathlib.Path) -> Dict[str, Record]:
+def read_dict(path: pathlib.Pat) -> Dict[str, Record]:
     """ Заванатажує довідник з файла
 
     path -- шлях до довідника
