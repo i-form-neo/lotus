@@ -147,7 +147,7 @@ def main():
     # Handler: change name phone - змінює існуючий контакт
     @writer
     @verbose
-    def change(name: str, old_phone: str, new_phone: str) -> Tuple[bool, str]:
+    def change(name: str, old_phone: str, new_phone: str, *args) -> Tuple[bool, str]:
         record = book.find_record(name)
         if record:
             record.edit_phone(old_phone, new_phone, "")
@@ -241,7 +241,7 @@ def main():
         history=history, completer=completer, reserve_space_for_menu=True)
 
     @validate
-    def parse_input(msg_prompt: str) -> List[str]:
+    def parse_input(msg_prompt: str, *args) -> List[str]:
         msg = session.prompt(msg_prompt)
 
         # cmd = msg.split()
