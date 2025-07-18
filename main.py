@@ -53,10 +53,13 @@ commands = {
     "add-email": 2,
     "add-address": 2,
     "change": 3,
+    "remove": 1,
     "all": 0,
     "phone": 1,
     "show-birthday": 1,
     "birthdays": 1,
+    "find-by-phone": 1,
+    "find-by-email": 1,
     "add-note": 2,
     "all-notes": 0,
     "exit": 0,
@@ -73,10 +76,13 @@ command_usage = {
     "add-email": 'Add or update email: name email (add-email "John Dou" john.dou@example.com)',
     "add-address": 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
     "change": 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
+    "remove": 'Remove contact: name (remove "John Dou")',
     "all": 'Print all contacts (all)',
     "phone": 'Print phones: name (phone "John Dou")',
     "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
     "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
+    "find-by-phone":  'Find and print contact by phone: phone (find-by-phone +380123334455)',
+    "find-by-email":  'Find and print contact by email: email (find-by-email john.dou@example.com)',
     "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
     "all-notes": 'Print all notes (all-notes)',
     "exit": 'Close bot',
@@ -99,8 +105,9 @@ def main():
 
     # Декоратор записує словник у файл при вдалому завершенні функції
     def writer(func):
-        def inner(name: str, phone: str, phone2: str | None = None) -> Tuple[bool, str]:
-            res = func(name, phone, phone2)
+        def inner(name: str, *args) -> Tuple[bool, str]:
+            
+            res = func(name, *args)
             if res[0]:
                 write_dict(dict_path, dictionary)
             return res
@@ -162,6 +169,17 @@ def main():
         if record:
             record.edit_phone(old_phone, new_phone, "")
             return True, f"Contact {name}: {old_phone} changed to {new_phone}"
+        else:
+            return False, f"[bold red]Contact {name} not found[/bold red]"
+        
+    # Handler: remove name  - видаляє існуючий контакт
+    @writer
+    @verbose
+    def remove(name: str, *args) -> Tuple[bool, str]:
+        record = book.find_record(name)
+        if record:
+            book.remove_record(name)
+            return True, f"Contact {name} removed"
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
 
@@ -259,6 +277,27 @@ def main():
             return True, "[bold green]OK[/bold green]\n"
         else:
             return True, "[bold green]Empty list[/bold green]\n"
+        
+    # Handler: find-by-phone - шукає та виводить контакт за телефоном
+    @verbose
+    def find_by_phone(phone: str, *args):
+        record = book.find_record_by_phone(phone)
+        if record:
+            console.print(record)
+            return True, "OK\n"
+        else:
+            return False, f"[bold red]Contact with phone {phone} not found[/bold red]"
+        
+    # Handler: find-by-email - шукає та виводить контакт за email
+    @verbose
+    def find_by_email(email: str, *args):
+        record = book.find_record_by_email(email)
+        if record:
+            console.print(record)
+            return True, "OK\n"
+        else:
+            return False, f"[bold red]Contact with email {email} not found[/bold red]"
+
 
     # Handler: add-note title text - додає нову нотатку
     def add_note(title: str, *args) -> Tuple[bool, str]:
@@ -327,6 +366,8 @@ def main():
                     add_address(name, address)
                 case ['change', name, old_phone, new_phone]:
                     change(name, old_phone, new_phone)
+                case ['remove', name]:
+                    remove(name)
                 case ['all']:
                     print_all()
                 case ['phone', name]:
@@ -335,6 +376,10 @@ def main():
                     show_birthday(name)
                 case ['birthdays', n_day]:
                     birthdays(n_day)
+                case ['find-by-phone', phone]:
+                    find_by_phone(phone)
+                case ['find-by-email', email]:
+                    find_by_email(email)
                 case ['add-note', title, *args]:
                     add_note(title, *args)
                 case ['all-notes']:
