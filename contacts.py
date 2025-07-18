@@ -147,6 +147,22 @@ class AddressBook(UserDict):
 
         name = name.strip().lower()
         return self.data.get(name, None)
+    
+    def find_record_by_phone(self, phone: str) -> Record | None:
+        """Finds and returns Record in the Address Book by phone"""
+
+        for (k, v) in self.data.items():
+            if phone in v.phones:
+                return self.data.get(k, None)
+        return None
+    
+    def find_record_by_email(self, email: str) -> Record | None:
+        """Finds and returns Record in the Address Book by email"""
+
+        for (k, v) in self.data.items():
+            if v.email is not None and email == v.email.value:
+                return self.data.get(k, None)
+        return None
 
     def remove_record(self, name: str):
         """Removes Record from the Address Book by name"""
