@@ -1,4 +1,6 @@
 # Базовий клас для поля
+from __future__ import annotations
+
 
 class Field:
     """Base class for field"""

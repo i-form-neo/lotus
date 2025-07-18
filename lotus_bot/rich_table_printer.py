@@ -1,6 +1,8 @@
 """Module for printing output in table-like format in single style"""
+from __future__ import annotations
 
-from datetime import datetime, time
+from datetime import datetime
+from datetime import time
 
 from rich.console import Console
 from rich.table import Table
@@ -9,10 +11,9 @@ SORTABLE_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 SORTABLE_DATE_FORMAT = "%Y-%m-%d"
 
 
-def print_as_rich_table(columns: list[dict],
-                        rows: list[list],
-                        sort_by: str = "",
-                        reverse_sort: bool = False):
+def print_as_rich_table(
+    columns: list[dict], rows: list[list], sort_by: str = "", reverse_sort: bool = False
+):
     """
     Prints data as a rich table with customizable columns and rows.
 
@@ -42,8 +43,13 @@ def print_as_rich_table(columns: list[dict],
         else:
             return field
 
-    table = Table(show_header=True, header_style="bold green", show_lines=True, highlight=False,
-                  row_styles=["dim", ""])
+    table = Table(
+        show_header=True,
+        header_style="bold green",
+        show_lines=True,
+        highlight=False,
+        row_styles=["dim", ""],
+    )
 
     for col_info in columns:
         table.add_column(
@@ -51,18 +57,19 @@ def print_as_rich_table(columns: list[dict],
             min_width=col_info.get("min_width"),
             max_width=col_info.get("max_width"),
             justify=col_info.get("justify", "left"),
-            no_wrap=col_info.get("no_wrap", False)
+            no_wrap=col_info.get("no_wrap", False),
         )
 
     if sort_by:
-        sort_col_index = [col.get("name").casefold()
-                          for col in columns].index(sort_by.casefold())
-        rows.sort(key=lambda row: str(
-            row[sort_col_index]), reverse=reverse_sort)
+        sort_col_index = [col.get("name").casefold() for col in columns].index(
+            sort_by.casefold()
+        )
+        rows.sort(key=lambda row: str(row[sort_col_index]), reverse=reverse_sort)
 
     for row_data in rows:
-        processed_row = [none_as_empty(
-            date_time_sortable_format(field)) for field in row_data]
+        processed_row = [
+            none_as_empty(date_time_sortable_format(field)) for field in row_data
+        ]
         table.add_row(*processed_row)
 
     console.print(table)

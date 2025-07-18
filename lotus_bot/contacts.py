@@ -1,12 +1,14 @@
 """Module for address book with phones and birthdays for contacts"""
+from __future__ import annotations
 
 from collections import UserDict
+from datetime import datetime
+from datetime import timedelta
 from typing import Dict
-from datetime import datetime, timedelta
 
 from lotus_bot.field import Field
-from lotus_bot.verification_phone_number import is_valid_ukrainian_phone
 from lotus_bot.verification_email import is_valid_email
+from lotus_bot.verification_phone_number import is_valid_ukrainian_phone
 
 
 class Name(Field):
@@ -35,7 +37,7 @@ class Phones(UserDict):
     """Class for Phone field"""
 
     def __str__(self):
-        return ' '.join([f"{v}" for v in self.data.values()])
+        return " ".join([f"{v}" for v in self.data.values()])
 
 
 class Birthday(Field):
@@ -208,13 +210,20 @@ class AddressBook(UserDict):
 
                 if congratulation_date.weekday() > 4:
                     congratulation_date += timedelta(
-                        days=7 - congratulation_date.weekday())
+                        days=7 - congratulation_date.weekday()
+                    )
                 return f"{record.name}: congratulation date: {congratulation_date.strftime('%d.%m.%Y')}"
             else:
                 return ""
 
         # Формуємо список привітань на наступні n_day днів
-        return '\n'.join([make_congratulation_date(record) for record in self.data.values() if birthday_in_interval(record, n_day)])
+        return "\n".join(
+            [
+                make_congratulation_date(record)
+                for record in self.data.values()
+                if birthday_in_interval(record, n_day)
+            ]
+        )
 
     def __str__(self):
-        return '\n'.join(str(rec) for rec in self.data.values())
+        return "\n".join(str(rec) for rec in self.data.values())

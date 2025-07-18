@@ -1,4 +1,6 @@
 """Module for email validation"""
+from __future__ import annotations
+
 import re
 
 
@@ -15,7 +17,7 @@ def is_valid_email(email):
     """
     if not email:
         return False
-    pattern = r'^[\w\.\+\-]+@([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}$'
+    pattern = r"^[\w\.\+\-]+@([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
 
 

@@ -1,4 +1,5 @@
 """Module for ukrainian phone number validation"""
+from __future__ import annotations
 
 
 def is_valid_ukrainian_phone(number):
@@ -14,7 +15,7 @@ def is_valid_ukrainian_phone(number):
     Повертає True, якщо номер валідний, інакше False.
     """
     # Удаляем все пробелы из ввода
-    number = number.replace(' ', '')
+    number = number.replace(" ", "")
 
     # Проверяем что начинается с +38
     if not number.startswith("+38"):
@@ -40,7 +41,9 @@ def main():
             print("✅ Phone number is valid.")
             break
         else:
-            print("❌ Invalid phone number. The number must start with +38 and contain exactly 10 digits (no spaces or extra symbols). Please try again.")
+            print(
+                "❌ Invalid phone number. The number must start with +38 and contain exactly 10 digits (no spaces or extra symbols). Please try again."
+            )
 
 
 if __name__ == "__main__":
