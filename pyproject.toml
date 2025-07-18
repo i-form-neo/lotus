@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lotus-bot"
+version - 1.0.0
+dynamic = ["version"]
+
+authors = [
+    { name="Youry Harchenko", email="youry@ukr.net" },
+    { name="Ilia Pavlov", email="elijapavlov@gmail.com" },
+    { name="Valeria Voloshyna", email="valeriavoloshina17@gmail.com" },
+    { name="Youry Harchenko", email="youry@ukr.net" }
+]
+
+description = "Assistant bot with contacts book and notes"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+lotus-cli = "main:main"
+
+dependencies = [
+    "click==8.2.1",
+    "markdown-it-py==3.0.0",
+    "mdurl==0.1.2",
+    "prompt_toolkit==3.0.51",
+    "Pygments==2.19.1",
+    "rich==14.0.0",
+    "shellingham==1.5.4",
+    "typing_extensions==4.14.0",
+    "wcwidth==0.2.13"
+]
+
+[project]
+keywords = ["lotus", "bot", "contacts", "notes"]
