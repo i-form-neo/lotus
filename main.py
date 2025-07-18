@@ -1,20 +1,24 @@
 """Main module for assistant bot"""
+from __future__ import annotations
 
-from typing import Dict, Tuple, List
-
-import pickle
 import pathlib
+import pickle
 import shlex
+from typing import Dict
+from typing import List
+from typing import Tuple
 
-from rich.console import Console
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
-from contacts import AddressBook, Record
+from rich.console import Console
+
+from contacts import AddressBook
+from contacts import Record
 
 
 def read_dict(path: pathlib.Path) -> Dict[str, Record]:
-    """ Заванатажує довідник з файла
+    """Заванатажує довідник з файла
 
     path -- шлях до довідника
     """
@@ -31,49 +35,49 @@ def read_dict(path: pathlib.Path) -> Dict[str, Record]:
 
 
 def write_dict(path: pathlib.Path, dictionary: Dict[str, Record]):
-    """ Записує довідник в файл
+    """Записує довідник в файл
 
     path -- шлях до довідника
     dict -- словник довідника
     """
-    with open(path, "wb") as f:
+    with open(path, 'wb') as f:
         pickle.dump(dictionary, f)
 
 
 # Команди та їхні ариті
 commands = {
-    "add-phone": 2,
-    "add-birthday": 2,
-    "add-email": 2,
-    "add-address": 2,
-    "change": 3,
-    "all": 0,
-    "phone": 1,
-    "show-birthday": 1,
-    "birthdays": 1,
-    "exit": 0,
-    "quit": 0,
-    "close": 0,
-    "hello": 0,
-    "help": 0
+    'add-phone': 2,
+    'add-birthday': 2,
+    'add-email': 2,
+    'add-address': 2,
+    'change': 3,
+    'all': 0,
+    'phone': 1,
+    'show-birthday': 1,
+    'birthdays': 1,
+    'exit': 0,
+    'quit': 0,
+    'close': 0,
+    'hello': 0,
+    'help': 0,
 }
 
 # Команди та їхнє використання
 command_usage = {
-    "add-phone": 'Add new contact or phone: name phone (add-phone "John Dou" +380123334455)',
-    "add-birthday": 'Add or update birthday: name birthday (add-birthday "John Dou" 22.07.2000)',
-    "add-email": 'Add or update email: name email (add-email "John Dou" john.dou@example.com)',
-    "add-address": 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
-    "change": 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
-    "all": 'Print all contacts (all)',
-    "phone": 'Print phones: name (phone "John Dou")',
-    "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
-    "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
-    "exit": 'Close bot',
-    "quit": 'Close bot',
-    "close": 'Close bot',
-    "hello": 'Hello bot',
-    "help": 'Print this usage'
+    'add-phone': 'Add new contact or phone: name phone (add-phone "John Dou" +380123334455)',
+    'add-birthday': 'Add or update birthday: name birthday (add-birthday "John Dou" 22.07.2000)',
+    'add-email': 'Add or update email: name email (add-email "John Dou" john.dou@example.com)',
+    'add-address': 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
+    'change': 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
+    'all': 'Print all contacts (all)',
+    'phone': 'Print phones: name (phone "John Dou")',
+    'show-birthday': 'Print birthday: name (show-birthday "John Dou")',
+    'birthdays': 'Print birthdays next n day: n_day (birthdays 10)',
+    'exit': 'Close bot',
+    'quit': 'Close bot',
+    'close': 'Close bot',
+    'hello': 'Hello bot',
+    'help': 'Print this usage',
 }
 
 
@@ -93,14 +97,18 @@ def main():
             if res[0]:
                 write_dict(dict_path, dictionary)
             return res
+
         return inner
 
     # Декоратор виводить повідомлення про результат операції
     def verbose(func):
-        def inner(name: str | None = None, phone: str | None = None, phone2: str | None = None) -> Tuple[bool, str]:
+        def inner(
+            name: str | None = None, phone: str | None = None, phone2: str | None = None
+        ) -> Tuple[bool, str]:
             res = func(name, phone, phone2)
             console.print(res[1])
             return res
+
         return inner
 
     # Декоратор приводить команди до нижнього регістру
@@ -114,14 +122,16 @@ def main():
                 if res[0] in commands:
                     if commands[res[0]] == arity:
                         for i in range(arity):
-                            res[i+1] = res[i+1].strip()
+                            res[i + 1] = res[i + 1].strip()
                     else:
                         console.print(
-                            f"[bold red]Command '{res[0]}' expected {commands[res[0]]}, but takes {arity} parameter(s)[/bold red]")
+                            f"[bold red]Command '{res[0]}' expected {commands[res[0]]}, but takes {arity} parameter(s)[/bold red]"
+                        )
                         res = ['error']
                 else:
                     console.print(
-                        f"[bold red]Unexpected command: {' '.join(res)}[/bold red]")
+                        f"[bold red]Unexpected command: {' '.join(res)}[/bold red]"
+                    )
                     res = ['error']
             else:
                 res = ['error']
@@ -136,10 +146,10 @@ def main():
     def add(name: str, phone: str, *args) -> Tuple[bool, str]:
         record = book.find_record(name)
         if record:
-            record.add_phone(phone, "")
+            record.add_phone(phone, '')
         else:
             record = Record(name)
-            record.add_phone(phone, "")
+            record.add_phone(phone, '')
             book.add_record(name, record)
         return True, f"Phone {phone} to {name} added"
 
@@ -149,7 +159,7 @@ def main():
     def change(name: str, old_phone: str, new_phone: str) -> Tuple[bool, str]:
         record = book.find_record(name)
         if record:
-            record.edit_phone(old_phone, new_phone, "")
+            record.edit_phone(old_phone, new_phone, '')
             return True, f"Contact {name}: {old_phone} changed to {new_phone}"
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
@@ -197,9 +207,9 @@ def main():
 
     @verbose
     def print_all(*args) -> Tuple[bool, str]:
-        console.print("")
+        console.print('')
         console.print(str(book))
-        return True, "[bold green]OK[/bold green]\n"
+        return True, '[bold green]OK[/bold green]\n'
 
     # Handler: phone name - виводить телефони вказаного контакту
     @verbose
@@ -207,7 +217,7 @@ def main():
         record = book.find_record(name)
         if record:
             console.print(f"Phones {record.name}:  {record.phones}")
-            return True, "OK\n"
+            return True, 'OK\n'
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
 
@@ -217,7 +227,7 @@ def main():
         record = book.find_record(name)
         if record:
             console.print(f"Birthday {record.name}:  {record.birthday}")
-            return True, "OK\n"
+            return True, 'OK\n'
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
 
@@ -228,16 +238,17 @@ def main():
         report = book.get_upcoming_birthdays(n_day)
         if report:
             console.print(report)
-            return True, "[bold green]OK[/bold green]\n"
+            return True, '[bold green]OK[/bold green]\n'
         else:
-            return True, "[bold green]Empty list[/bold green]\n"
+            return True, '[bold green]Empty list[/bold green]\n'
 
     history_path = script_path.with_name('.history')
     history = FileHistory(history_path)
     completer = WordCompleter(list(commands.keys()))
 
     session = PromptSession(
-        history=history, completer=completer, reserve_space_for_menu=True)
+        history=history, completer=completer, reserve_space_for_menu=True
+    )
 
     @validate
     def parse_input(msg_prompt: str) -> List[str]:
@@ -248,17 +259,18 @@ def main():
         return cmd
 
     def print_help():
-        console.print("Available commands and their arities:")
+        console.print('Available commands and their arities:')
         for k, v in commands.items():
             console.print(f"    {k}/{v} -- {command_usage.get(k, '')}")
 
-    console.print("[bold green]Welcome to the assistant bot![/bold green]")
+    console.print('[bold green]Welcome to the assistant bot![/bold green]')
     console.print(
-        "Type 'help' for available commands or 'exit' | 'quit' | 'close' to quit.")
-    console.print("Press [yellow]Tab[/yellow] for auto-completion.")
+        "Type 'help' for available commands or 'exit' | 'quit' | 'close' to quit."
+    )
+    console.print('Press [yellow]Tab[/yellow] for auto-completion.')
 
     while True:
-        repl = parse_input("Enter a command: ")
+        repl = parse_input('Enter a command: ')
         try:
             match repl:
                 case ['add-phone', name, phone]:
@@ -280,21 +292,21 @@ def main():
                 case ['birthdays', n_day]:
                     birthdays(n_day)
                 case ['exit'] | ['quit'] | ['close']:
-                    console.print("[bold green]Good bye![/bold green]")
+                    console.print('[bold green]Good bye![/bold green]')
                     break
                 case ['hello']:
-                    console.print(
-                        "[bold green]How can I help you?[/bold green]")
+                    console.print('[bold green]How can I help you?[/bold green]')
                 case ['help']:
                     print_help()
                 case ['error']:
-                    console.print("")
+                    console.print('')
                 case _:
                     console.print(
-                        f"[bold red]Unexpected command: {' '.join(repl)}[/bold red]")
+                        f"[bold red]Unexpected command: {' '.join(repl)}[/bold red]"
+                    )
         except Exception as ex:
             console.print(f"[bold red]{ex}[/bold red]")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

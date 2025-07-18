@@ -2,7 +2,6 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
-    -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
     -   id: double-quote-string-fixer
@@ -11,14 +10,11 @@ repos:
     -   id: check-ast
     -   id: mixed-line-ending
         args: [--fix=lf]
--   repo: https://github.com/psf/black
-    rev: 22.10.0
-    hooks:
-    -   id: black
 -   repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
     hooks:
     -   id: flake8
+        args: [--max-line-length=150]
 -   repo: https://github.com/asottile/reorder-python-imports
     rev: v3.12.0
     hooks:

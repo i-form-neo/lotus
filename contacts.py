@@ -1,8 +1,11 @@
 """Module for address book with phones and birthdays for contacts"""
+from __future__ import annotations
 
 from collections import UserDict
+from datetime import datetime
+from datetime import timedelta
 from typing import Dict
-from datetime import datetime, timedelta
+
 from field import Field
 from verification_phone_number import is_valid_ukrainian_phone
 
@@ -15,6 +18,7 @@ class Name(Field):
     def __str__(self):
         return self.value
 
+
 # Клас для поля Phone
 
 
@@ -25,12 +29,13 @@ class Phone(Field):
         phone = phone.strip()
         if not is_valid_ukrainian_phone(phone):
             raise ValueError(
-                "❌ Invalid phone number. It must start with +38 and contain exactly 10 digits."
+                '❌ Invalid phone number. It must start with +38 and contain exactly 10 digits.'
             )
         super().__init__((phone, info))
 
     def __str__(self):
         return f"{self.value[0]} : {self.value[1]}"
+
 
 # Клас для поля словник телефонів
 
@@ -41,6 +46,7 @@ class Phones(UserDict):
     def __str__(self):
         return ' '.join([f"({v})" for v in self.data.values()])
 
+
 # Клас для поля дата народження
 
 
@@ -49,12 +55,13 @@ class Birthday(Field):
 
     def __init__(self, value):
         try:
-            super().__init__(datetime.strptime(value, "%d.%m.%Y"))
+            super().__init__(datetime.strptime(value, '%d.%m.%Y'))
         except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+            raise ValueError('Invalid date format. Use DD.MM.YYYY')
 
     def __str__(self):
-        return datetime.strftime(self.value, "%d.%m.%Y") if self.value else "None"
+        return datetime.strftime(self.value, '%d.%m.%Y') if self.value else 'None'
+
 
 # Клас для поля Email
 
@@ -68,6 +75,7 @@ class Email(Field):
 
     def __str__(self):
         return f"{self.value}"
+
 
 # Клас для поля Address
 
@@ -208,13 +216,20 @@ class AddressBook(UserDict):
 
                 if congratulation_date.weekday() > 4:
                     congratulation_date += timedelta(
-                        days=7 - congratulation_date.weekday())
+                        days=7 - congratulation_date.weekday()
+                    )
                 return f"{record.name}: congratulation date: {congratulation_date.strftime('%d.%m.%Y')}"
             else:
-                return ""
+                return ''
 
         # Формуємо список привітань на наступні n_day днів
-        return '\n'.join([make_congratulation_date(record) for record in self.data.values() if birthday_in_interval(record, n_day)])
+        return '\n'.join(
+            [
+                make_congratulation_date(record)
+                for record in self.data.values()
+                if birthday_in_interval(record, n_day)
+            ]
+        )
 
     def __str__(self):
         return '\n'.join(str(rec) for rec in self.data.values())

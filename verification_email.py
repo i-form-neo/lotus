@@ -1,4 +1,6 @@
 """Module for email validation"""
+from __future__ import annotations
+
 import re
 
 
@@ -22,13 +24,13 @@ def is_valid_email(email):
 def main():
     """Method for internal testing"""
     while True:
-        user_email = input("Enter your email: ").strip()
+        user_email = input('Enter your email: ').strip()
         if is_valid_email(user_email):
-            print("✅ Email is valid, thank you!")
+            print('✅ Email is valid, thank you!')
             break
         else:
-            print("❌ Email is not valid. Try again")
+            print('❌ Email is not valid. Try again')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

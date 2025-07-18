@@ -1,7 +1,9 @@
 """Module for notebook with notes"""
+from __future__ import annotations
 
 from collections import UserDict
-from datetime import datetime#, timedelta
+from datetime import datetime  # , timedelta
+
 from field import Field
 
 # Клас для поля Title
@@ -13,6 +15,7 @@ class Title(Field):
     def __str__(self):
         return self.value
 
+
 # Клас для поля Note
 
 
@@ -22,6 +25,7 @@ class Note(Field):
     def __str__(self):
         return self.value
 
+
 # Клас для нотатки
 
 
@@ -30,12 +34,13 @@ class NoteRecord:
     Клас NoteRecord представляє запис однієї нотатки. Поле
     id реалізовано за допомогою атрибуту класа.
     """
+
     _id_counter = 1
 
-    def __init__(self, title=None, text=""):
+    def __init__(self, title=None, text=''):
         self.id = NoteRecord._id_counter
         NoteRecord._id_counter += 1
-        self.title = Title(title if title is not None else "Без назви")
+        self.title = Title(title if title is not None else 'Без назви')
         self.text = Note(text)
         self.date_created = datetime.now()
         self.date_modified = self.date_created
@@ -48,8 +53,11 @@ class NoteRecord:
         self.date_modified = datetime.now()
 
     def __str__(self):
-        return (f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
-                f"Created: {self.date_created}\nModified: {self.date_modified}")
+        return (
+            f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
+            f"Created: {self.date_created}\nModified: {self.date_modified}"
+        )
+
 
 # Клас для списка нотаток
 

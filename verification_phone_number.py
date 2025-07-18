@@ -1,4 +1,5 @@
 """Module for ukrainian phone number validation"""
+from __future__ import annotations
 
 
 def is_valid_ukrainian_phone(number):
@@ -17,7 +18,7 @@ def is_valid_ukrainian_phone(number):
     number = number.replace(' ', '')
 
     # Проверяем что начинается с +38
-    if not number.startswith("+38"):
+    if not number.startswith('+38'):
         return False
 
     # Проверяем длину (13 символов: +38 и 10 цифр)
@@ -35,13 +36,15 @@ def main():
     """Method for internal testing"""
 
     while True:
-        phone = input("Enter your phone number: ").strip()
+        phone = input('Enter your phone number: ').strip()
         if is_valid_ukrainian_phone(phone):
-            print("✅ Phone number is valid.")
+            print('✅ Phone number is valid.')
             break
         else:
-            print("❌ Invalid phone number. The number must start with +38 and contain exactly 10 digits (no spaces or extra symbols). Please try again.")
+            print(
+                '❌ Invalid phone number. The number must start with +38 and contain exactly 10 digits (no spaces or extra symbols). Please try again.'
+            )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
