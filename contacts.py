@@ -3,6 +3,9 @@
 from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
+from rich.console import Console
+from rich.table import Table
+
 from field import Field
 from verification_phone_number import is_valid_ukrainian_phone
 from verification_email import is_valid_email
@@ -31,7 +34,7 @@ class Phone(Field):
         super().__init__((phone, info))
 
     def __str__(self):
-        return f"{self.value[0]} : {self.value[1]}"
+        return f"{self.value[0]}{':' + self.value[1] if self.value[1] else ''} "
 
 # Клас для поля словник телефонів
 
@@ -40,7 +43,7 @@ class Phones(UserDict):
     """Class for Phone field"""
 
     def __str__(self):
-        return ' '.join([f"({v})" for v in self.data.values()])
+        return ' '.join([f"{v}" for v in self.data.values()])
 
 # Клас для поля дата народження
 
@@ -66,7 +69,7 @@ class Email(Field):
     def __init__(self, email: str):
         email = email.strip()
         if not is_valid_email(email):
-            raise ValueError ("Invalid email address format")
+            raise ValueError("Invalid email address format")
         super().__init__(email)
 
     def __str__(self):
@@ -93,7 +96,7 @@ class Record:
     """Class for an Address Book record"""
 
     def __init__(self, name: str):
-        name = name.strip().lower()
+        name = name.strip()
         self.name: Name = Name(name)
         self.phones: Phones = Phones({})
         self.birthday: Birthday | None = None
