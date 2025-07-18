@@ -5,17 +5,22 @@ from typing import Dict, Tuple, List
 import pickle
 import pathlib
 import shlex
+import sys
 
 from rich.console import Console
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
+from appdirs import user_data_dir
 from contacts import AddressBook, Record
 from notes import NotesBook, NoteRecord
 from rich_table_printer import print_as_rich_table
 
 
-def read_dict(path: pathlib.Path) -> Dict[str, Record]:
+app_name = "Lotus"
+app_author = "i-form"
+
+def read_dict(path: pathlib.Path) -> Dict:
     """ Заванатажує довідник з файла
 
     path -- шлях до довідника
@@ -32,7 +37,7 @@ def read_dict(path: pathlib.Path) -> Dict[str, Record]:
         return {}
 
 
-def write_dict(path: pathlib.Path, dictionary: Dict[str, Record]):
+def write_dict(path: pathlib.Path, dictionary: Dict):
     """ Записує довідник в файл
 
     path -- шлях до довідника
@@ -91,13 +96,28 @@ command_usage = {
 
 def main():
     """Entry point for Assistant Bot"""
-    script_path = pathlib.Path(__file__)
-    dict_path = script_path.with_name('contacts.pickle')
-    dictionary = read_dict(dict_path)
 
     console = Console()
-    book = AddressBook(dictionary)
-    notes_book = NotesBook()
+
+    data_path = pathlib.Path(user_data_dir(app_name, app_author))
+    if not data_path.exists():
+        data_path.mkdir()
+    elif not data_path.is_dir():
+        console.print(f"[bold red]Path {data_path} is not dir![/bold red]")
+        sys.exit(1)
+        
+    dict_path = data_path.joinpath('lotus.pickle')
+    dictionary = read_dict(dict_path)
+
+    if len(dictionary) == 0:
+        book = AddressBook({})
+        dictionary["contacts"] = book.data
+        notes_book = NotesBook({})    
+        dictionary["notes"] = notes_book.data
+    else:
+        book = AddressBook(dictionary["contacts"])
+        notes_book = NotesBook(dictionary["notes"])
+
 
     # Декоратор записує словник у файл при вдалому завершенні функції
     def writer(func):
@@ -308,11 +328,15 @@ def main():
 
 
     # Handler: add-note title text - додає нову нотатку
+    @writer
+    @verbose
     def add_note(title: str, *args) -> Tuple[bool, str]:
         record = NoteRecord(title, args[0])
         notes_book.add_note(record)
+        return True, f"Note '{title}' added"
 
     # Handler: all-note виводить всі нотатки у вигляді таблиці
+    @verbose
     def all_notes(*args) -> Tuple[bool, str]:
         sort_by, reverse_sort = sort_params(args)
 
@@ -338,8 +362,9 @@ def main():
             sort_by=sort_by,
             reverse_sort=reverse_sort
         )
+        return True, "[bold green]OK[/bold green]\n"
 
-    history_path = script_path.with_name('.history')
+    history_path = data_path.joinpath('.history')
     history = FileHistory(history_path)
     completer = WordCompleter(list(commands.keys()))
 
