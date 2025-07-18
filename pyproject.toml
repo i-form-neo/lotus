@@ -15,6 +15,7 @@ authors = [
 ]
 
 description = "Assistant bot with contacts book and notes"
+keywords = ["lotus", "bot", "contacts", "notes"]
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -37,6 +38,3 @@ dependencies = [
     "typing_extensions==4.14.0",
     "wcwidth==0.2.13"
 ]
-
-[project]
-keywords = ["lotus", "bot", "contacts", "notes"]
