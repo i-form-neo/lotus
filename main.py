@@ -6,12 +6,17 @@ import pickle
 import pathlib
 import shlex
 
+from datetime import datetime
+
 from rich.console import Console
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from contacts import AddressBook, Record
+from notes import NotesBook, NoteRecord
+from rich_table_printer import print_as_rich_table
 
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def read_dict(path: pathlib.Path) -> Dict[str, Record]:
@@ -52,6 +57,8 @@ commands = {
     "phone": 1,
     "show-birthday": 1,
     "birthdays": 1,
+    "add-note": 2,
+    "all-notes": 0,
     "exit": 0,
     "quit": 0,
     "close": 0,
@@ -70,6 +77,8 @@ command_usage = {
     "phone": 'Print phones: name (phone "John Dou")',
     "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
     "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
+    "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
+    "all-notes": 'Print all notes (all-notes)',
     "exit": 'Close bot',
     "quit": 'Close bot',
     "close": 'Close bot',
@@ -86,6 +95,7 @@ def main():
 
     console = Console()
     book = AddressBook(dictionary)
+    notes_book = NotesBook()
 
     # Декоратор записує словник у файл при вдалому завершенні функції
     def writer(func):
@@ -195,11 +205,28 @@ def main():
         return True, f"Address {address} to {name} added"
 
     # Handler: all - виводить всі контакти
-
     @verbose
     def print_all(*args) -> Tuple[bool, str]:
-        console.print("")
-        console.print(str(book))
+        print_as_rich_table(
+            columns=[
+                {"name": "Name", "min_width": 20, "max_width": 30,
+                 "no_wrap": False},
+                {"name": "Birthday", "min_width": 10},
+                {"name": "Address", "justify": "right",
+                    "no_wrap": False, "max_width": 30},
+                {"name": "Phones", "justify": "right",
+                    "no_wrap": False, "max_width": 16},
+                {"name": "Email", "justify": "right"}
+            ],
+            rows=[
+                [record.name,
+                 record.birthday,
+                 record.address,
+                 record.phones,
+                 record.email]
+                for record in book.values()
+            ]
+        )
         return True, "[bold green]OK[/bold green]\n"
 
     # Handler: phone name - виводить телефони вказаного контакту
@@ -212,7 +239,7 @@ def main():
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
 
-    # Handler: phone name - виводить вказаний контакт
+    # Handler: birthdays - виводить день народження за іменем
     @verbose
     def show_birthday(name: str, *args):
         record = book.find_record(name)
@@ -232,6 +259,34 @@ def main():
             return True, "[bold green]OK[/bold green]\n"
         else:
             return True, "[bold green]Empty list[/bold green]\n"
+
+    # Handler: add-note title text - додає нову нотатку
+    def add_note(title: str, *args) -> Tuple[bool, str]:
+        record = NoteRecord(title, args[0])
+        notes_book.add_note(record)
+
+    # Handler: all-note виводить всі нотатки у вигляді таблиці
+    def all_notes(*args) -> Tuple[bool, str]:
+        print_as_rich_table(
+            columns=[
+                {"name": "Id", "min_width": 2, "max_width": 6},
+                {"name": "Title", "min_width": 10, "max_width": 20},
+                {"name": "Text", "justify": "left",
+                    "no_wrap": False, "min_width": 30},
+                {"name": "Created on", "justify": "right",
+                    "no_wrap": False, "max_width": 12},
+                {"name": "Modified on", "justify": "right",
+                    "no_wrap": False, "max_width": 12}
+            ],
+            rows=[
+                [id,
+                 record.title,
+                 record.text,
+                 record.date_created.strftime(TIMESTAMP_FORMAT),
+                 record.date_modified.strftime(TIMESTAMP_FORMAT)]
+                for id, record in notes_book.items()
+            ]
+        )
 
     history_path = script_path.with_name('.history')
     history = FileHistory(history_path)
@@ -253,9 +308,9 @@ def main():
         for k, v in commands.items():
             console.print(f"    {k}/{v} -- {command_usage.get(k, '')}")
 
-    console.print("[bold green]Welcome to the assistant bot![/bold green]")
     console.print(
-        "Type 'help' for available commands or 'exit' | 'quit' | 'close' to quit.")
+        "[bold green]Welcome to the assistant bot![/bold green]")
+    print_help()
     console.print("Press [yellow]Tab[/yellow] for auto-completion.")
 
     while True:
@@ -280,6 +335,10 @@ def main():
                     show_birthday(name)
                 case ['birthdays', n_day]:
                     birthdays(n_day)
+                case ['add-note', title, *args]:
+                    add_note(title, *args)
+                case ['all-notes']:
+                    all_notes()
                 case ['exit'] | ['quit'] | ['close']:
                     console.print("[bold green]Good bye![/bold green]")
                     break
