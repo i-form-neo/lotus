@@ -44,7 +44,7 @@ class Tags(UserList):
                 result.append(cleaned)
         return result
 
-    def add(self, tags: str):
+    def add(self, tags):
         """Додає список тегів, уникаючи дублікатів"""
         tags = tags.split(",")
         new_tags = self._normalize_and_filter(tags)
@@ -72,11 +72,11 @@ class NoteRecord:
     - tags - необов'язковий, повинен бути рядком через кому: "tag1, tag2, tag3"
     """
 
-    _id_counter = 1
+    #_id_counter = 1
 
     def __init__(self, title=None, text="", tags=None):
-        self.id = NoteRecord._id_counter
-        NoteRecord._id_counter += 1
+        self.id = -1 # NoteRecord._id_counter
+        #NoteRecord._id_counter += 1
         self.title = Title(title if title is not None else "Без назви")
         self.text = Note(text)
         self.date_created = datetime.now()
@@ -168,16 +168,26 @@ class NotesBook(UserDict):
     edit_note() - редагування замітки по id
     """
 
-    def __init__(self):
+    def __init__(self, dictionary):
         super().__init__()
+        self.data = dictionary
         self.tag_index = TagIndex()
+
+    def __next_id(self) -> int:
+        if len(self.data) == 0:
+            return 1
+        else:
+            return max(self.data.keys()) + 1
 
     def add_note(self, record: NoteRecord):
         """
         Метод add_note() приймає один агрумент типу NoteRecord, 
         додає замітку
         """
-        self.data[record.id] = record
+        #self.data[record.id] = record
+        id = self.__next_id()
+        record.id = id
+        self.data[id] = record
         self.tag_index.add_record_to_index(record)
 
     def search_by_tags(self, tags: str):
