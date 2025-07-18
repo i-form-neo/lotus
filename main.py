@@ -259,8 +259,8 @@ def main():
     console.print("Press [yellow]Tab[/yellow] for auto-completion.")
 
     while True:
-        repl = parse_input("Enter a command: ")
         try:
+            repl = parse_input("Enter a command: ")
             match repl:
                 case ['add-phone', name, phone]:
                     add(name, phone)
