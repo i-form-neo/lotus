@@ -37,4 +37,4 @@ classifiers = [
 ]
 
 [project.scripts]
-lotus-cli = "main:main"
+lotus-cli = "lotus_bot:main"
