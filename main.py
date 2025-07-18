@@ -6,8 +6,6 @@ import pickle
 import pathlib
 import shlex
 
-from datetime import datetime
-
 from rich.console import Console
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
@@ -15,8 +13,6 @@ from prompt_toolkit.history import FileHistory
 from contacts import AddressBook, Record
 from notes import NotesBook, NoteRecord
 from rich_table_printer import print_as_rich_table
-
-TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def read_dict(path: pathlib.Path) -> Dict[str, Record]:
@@ -73,12 +69,12 @@ command_usage = {
     "add-email": 'Add or update email: name email (add-email "John Dou" john.dou@example.com)',
     "add-address": 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
     "change": 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
-    "all": 'Print all contacts (all)',
+    "all": 'Print all contacts: all [sort-by-column, desc|reverse|true] (all birthday desc)',
     "phone": 'Print phones: name (phone "John Dou")',
     "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
     "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
     "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
-    "all-notes": 'Print all notes (all-notes)',
+    "all-notes": 'Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)',
     "exit": 'Close bot',
     "quit": 'Close bot',
     "close": 'Close bot',
@@ -123,7 +119,7 @@ def main():
                 res[0] = res[0].strip().lower()
                 arity = len(res) - 1
                 if res[0] in commands:
-                    if commands[res[0]] == arity:
+                    if commands[res[0]] <= arity:
                         for i in range(arity):
                             res[i+1] = res[i+1].strip()
                     else:
@@ -204,9 +200,9 @@ def main():
             book.add_record(name, record)
         return True, f"Address {address} to {name} added"
 
-    # Handler: all - виводить всі контакти
-    @verbose
     def print_all(*args) -> Tuple[bool, str]:
+        sort_by, reverse_sort = sort_params(args)
+
         print_as_rich_table(
             columns=[
                 {"name": "Name", "min_width": 20, "max_width": 30,
@@ -220,14 +216,26 @@ def main():
             ],
             rows=[
                 [record.name,
-                 record.birthday,
+                 record.birthday.value if record.birthday else "",
                  record.address,
                  record.phones,
                  record.email]
                 for record in book.values()
-            ]
+            ],
+            sort_by=sort_by,
+            reverse_sort=reverse_sort
+
         )
         return True, "[bold green]OK[/bold green]\n"
+
+    def sort_params(args):
+        sort_by = ""
+        reverse_sort = False
+        if args:
+            sort_by = args[0]
+            if len(args) > 1:
+                reverse_sort = args[1].lower() in {"desc", "reverse", "true"}
+        return sort_by, reverse_sort
 
     # Handler: phone name - виводить телефони вказаного контакту
     @verbose
@@ -267,25 +275,29 @@ def main():
 
     # Handler: all-note виводить всі нотатки у вигляді таблиці
     def all_notes(*args) -> Tuple[bool, str]:
+        sort_by, reverse_sort = sort_params(args)
+
         print_as_rich_table(
             columns=[
                 {"name": "Id", "min_width": 2, "max_width": 6},
                 {"name": "Title", "min_width": 10, "max_width": 20},
                 {"name": "Text", "justify": "left",
                     "no_wrap": False, "min_width": 30},
-                {"name": "Created on", "justify": "right",
+                {"name": "Created", "justify": "right",
                     "no_wrap": False, "max_width": 12},
-                {"name": "Modified on", "justify": "right",
+                {"name": "Modified", "justify": "right",
                     "no_wrap": False, "max_width": 12}
             ],
             rows=[
                 [id,
                  record.title,
                  record.text,
-                 record.date_created.strftime(TIMESTAMP_FORMAT),
-                 record.date_modified.strftime(TIMESTAMP_FORMAT)]
+                 record.date_created,
+                 record.date_modified]
                 for id, record in notes_book.items()
-            ]
+            ],
+            sort_by=sort_by,
+            reverse_sort=reverse_sort
         )
 
     history_path = script_path.with_name('.history')
@@ -327,8 +339,8 @@ def main():
                     add_address(name, address)
                 case ['change', name, old_phone, new_phone]:
                     change(name, old_phone, new_phone)
-                case ['all']:
-                    print_all()
+                case ['all', *args]:
+                    print_all(*args)
                 case ['phone', name]:
                     print_phone(name)
                 case ['show-birthday', name]:
@@ -337,8 +349,8 @@ def main():
                     birthdays(n_day)
                 case ['add-note', title, *args]:
                     add_note(title, *args)
-                case ['all-notes']:
-                    all_notes()
+                case ['all-notes', *args]:
+                    all_notes(*args)
                 case ['exit'] | ['quit'] | ['close']:
                     console.print("[bold green]Good bye![/bold green]")
                     break
