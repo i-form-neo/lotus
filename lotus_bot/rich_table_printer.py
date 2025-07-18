@@ -59,8 +59,6 @@ def print_as_rich_table(columns: list[dict],
                           for col in columns].index(sort_by.casefold())
         rows.sort(key=lambda row: str(
             row[sort_col_index]), reverse=reverse_sort)
-        console.print(
-            f"[bold yellow]Sorting by '{sort_col_index}' ({'Descending' if reverse_sort else 'Ascending'})[/bold yellow]")
 
     for row_data in rows:
         processed_row = [none_as_empty(

@@ -1,8 +1,8 @@
 """Module for notebook with notes"""
 
 from collections import UserDict, UserList
-from datetime import datetime#, timedelta
-from field import Field
+from datetime import datetime  # , timedelta
+from lotus_bot.field import Field
 
 # Клас для поля Title
 
@@ -72,11 +72,11 @@ class NoteRecord:
     - tags - необов'язковий, повинен бути рядком через кому: "tag1, tag2, tag3"
     """
 
-    #_id_counter = 1
+    # _id_counter = 1
 
     def __init__(self, title=None, text="", tags=None):
-        self.id = -1 # NoteRecord._id_counter
-        #NoteRecord._id_counter += 1
+        self.id = -1  # NoteRecord._id_counter
+        # NoteRecord._id_counter += 1
         self.title = Title(title if title is not None else "Без назви")
         self.text = Note(text)
         self.date_created = datetime.now()
@@ -118,6 +118,7 @@ class TagIndex:
     модель словник де ключі - назви тегів,
     а значення список id заміток, яка містить тег
     """
+
     def __init__(self):
         self.index = {}
 
@@ -184,7 +185,7 @@ class NotesBook(UserDict):
         Метод add_note() приймає один агрумент типу NoteRecord, 
         додає замітку
         """
-        #self.data[record.id] = record
+        # self.data[record.id] = record
         id = self.__next_id()
         record.id = id
         self.data[id] = record

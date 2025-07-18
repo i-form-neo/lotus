@@ -2,6 +2,9 @@
 requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["lotus_bot"]
+
 [project]
 name = "lotus-bot"
 version = "1.0"
@@ -18,6 +21,7 @@ keywords = ["lotus", "bot", "contacts", "notes"]
 readme = "README.md"
 
 dependencies = [
+    "appdirs==1.4.4",
     "click==8.2.1",
     "markdown-it-py==3.0.0",
     "mdurl==0.1.2",
@@ -37,4 +41,4 @@ classifiers = [
 ]
 
 [project.scripts]
-lotus-cli = "main:main"
+lotus-cli = "lotus_bot:main"

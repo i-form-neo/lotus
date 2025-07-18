@@ -4,9 +4,9 @@ from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
 
-from field import Field
-from verification_phone_number import is_valid_ukrainian_phone
-from verification_email import is_valid_email
+from lotus_bot.field import Field
+from lotus_bot.verification_phone_number import is_valid_ukrainian_phone
+from lotus_bot.verification_email import is_valid_email
 
 
 class Name(Field):
@@ -147,7 +147,7 @@ class AddressBook(UserDict):
 
         name = name.strip().lower()
         return self.data.get(name, None)
-    
+
     def find_record_by_phone(self, phone: str) -> Record | None:
         """Finds and returns Record in the Address Book by phone"""
 
@@ -155,7 +155,7 @@ class AddressBook(UserDict):
             if phone in v.phones:
                 return self.data.get(k, None)
         return None
-    
+
     def find_record_by_email(self, email: str) -> Record | None:
         """Finds and returns Record in the Address Book by email"""
 

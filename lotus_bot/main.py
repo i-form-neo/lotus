@@ -12,13 +12,14 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from appdirs import user_data_dir
-from contacts import AddressBook, Record
-from notes import NotesBook, NoteRecord
-from rich_table_printer import print_as_rich_table
+from lotus_bot.contacts import AddressBook, Record
+from lotus_bot.notes import NotesBook, NoteRecord
+from lotus_bot.rich_table_printer import print_as_rich_table
 
 
 app_name = "Lotus"
 app_author = "i-form"
+
 
 def read_dict(path: pathlib.Path) -> Dict:
     """ Заванатажує довідник з файла
@@ -105,24 +106,24 @@ def main():
     elif not data_path.is_dir():
         console.print(f"[bold red]Path {data_path} is not dir![/bold red]")
         sys.exit(1)
-        
+
     dict_path = data_path.joinpath('lotus.pickle')
     dictionary = read_dict(dict_path)
 
     if len(dictionary) == 0:
         book = AddressBook({})
         dictionary["contacts"] = book.data
-        notes_book = NotesBook({})    
+        notes_book = NotesBook({})
         dictionary["notes"] = notes_book.data
     else:
         book = AddressBook(dictionary["contacts"])
         notes_book = NotesBook(dictionary["notes"])
 
-
     # Декоратор записує словник у файл при вдалому завершенні функції
+
     def writer(func):
         def inner(name: str, *args) -> Tuple[bool, str]:
-            
+
             res = func(name, *args)
             if res[0]:
                 write_dict(dict_path, dictionary)
@@ -187,7 +188,7 @@ def main():
             return True, f"Contact {name}: {old_phone} changed to {new_phone}"
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
-        
+
     # Handler: remove name  - видаляє існуючий контакт
     @writer
     @verbose
@@ -305,7 +306,7 @@ def main():
             return True, "[bold green]OK[/bold green]\n"
         else:
             return True, "[bold green]Empty list[/bold green]\n"
-        
+
     # Handler: find-by-phone - шукає та виводить контакт за телефоном
     @verbose
     def find_by_phone(phone: str, *args):
@@ -315,7 +316,7 @@ def main():
             return True, "OK\n"
         else:
             return False, f"[bold red]Contact with phone {phone} not found[/bold red]"
-        
+
     # Handler: find-by-email - шукає та виводить контакт за email
     @verbose
     def find_by_email(email: str, *args):
@@ -326,8 +327,8 @@ def main():
         else:
             return False, f"[bold red]Contact with email {email} not found[/bold red]"
 
-
     # Handler: add-note title text - додає нову нотатку
+
     @writer
     @verbose
     def add_note(title: str, *args) -> Tuple[bool, str]:
