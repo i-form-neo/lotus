@@ -355,8 +355,7 @@ def main():
         notes_book.add_note(record)
         return True, f"Note '{title}' added"
 
-    # Handler: all-note виводить всі нотатки у вигляді таблиці
-    @verbose
+    # Handler: all-notes виводить всі нотатки у вигляді таблиці
     def all_notes(*args) -> Tuple[bool, str]:
         sort_by, reverse_sort = sort_params(args)
 
