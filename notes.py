@@ -135,10 +135,18 @@ class TagIndex:
                     del self.index[tag]
 
     def add_tag(self, note_id, tag):
-        """Add a single tag→note_id mapping, avoiding duplicates."""
+        """ додає нотатку у індекс за тегом tag."""
         ids = self.index.setdefault(tag, [])
         if note_id not in ids:
             ids.append(note_id)
+
+    def remove_tag(self, note_id, tag):
+        """ видалення ID нотатки з списку для відповідного тега tag """
+        ids = self.index.get(tag, [])
+        if note_id in ids:
+            ids.remove(note_id)
+            if not ids:
+                del self.index[tag]
 
     def search(self, tag):
         """повертає список id заміток з тегом"""
@@ -231,5 +239,16 @@ class NotesBook(UserDict):
             added = new_tags.difference(old_tags)
             for tag in added:
                 self.tag_index.add_tag(note_id, tag)
+        return True
 
+    def remove_tag(self, note_id, tag):
+        """
+        Видалення тегу з однієї нотатки та оновлення індексу
+        """
+        note = self.get(note_id)
+        if not note:
+            return False
+
+        note.remove_tag(tag)
+        self.tag_index.remove_tag(note_id, tag)
         return True
