@@ -25,7 +25,6 @@ def print_as_rich_table(columns: list[dict], rows: list[list]):
     table = Table(show_header=True, header_style="bold green", show_lines=True, highlight=False,
                   row_styles=["dim", ""])
 
-    # Add columns dynamically
     for col_info in columns:
         table.add_column(
             col_info.get("name", ""),
@@ -35,7 +34,6 @@ def print_as_rich_table(columns: list[dict], rows: list[list]):
             no_wrap=col_info.get("no_wrap", False)
         )
 
-    # Add rows dynamically
     for row_data in rows:
         processed_row = [none_as_empty(field) for field in row_data]
         table.add_row(*processed_row)

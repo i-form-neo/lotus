@@ -3,14 +3,10 @@
 from collections import UserDict
 from typing import Dict
 from datetime import datetime, timedelta
-from rich.console import Console
-from rich.table import Table
 
 from field import Field
 from verification_phone_number import is_valid_ukrainian_phone
 from verification_email import is_valid_email
-
-# Клас для поля Name
 
 
 class Name(Field):
@@ -18,8 +14,6 @@ class Name(Field):
 
     def __str__(self):
         return self.value
-
-# Клас для поля Phone
 
 
 class Phone(Field):
@@ -36,16 +30,12 @@ class Phone(Field):
     def __str__(self):
         return f"{self.value[0]}{':' + self.value[1] if self.value[1] else ''} "
 
-# Клас для поля словник телефонів
-
 
 class Phones(UserDict):
     """Class for Phone field"""
 
     def __str__(self):
         return ' '.join([f"{v}" for v in self.data.values()])
-
-# Клас для поля дата народження
 
 
 class Birthday(Field):
@@ -60,8 +50,6 @@ class Birthday(Field):
     def __str__(self):
         return datetime.strftime(self.value, "%d.%m.%Y") if self.value else "None"
 
-# Клас для поля Email
-
 
 class Email(Field):
     """Class for email field"""
@@ -75,8 +63,6 @@ class Email(Field):
     def __str__(self):
         return f"{self.value}"
 
-# Клас для поля Address
-
 
 class Address(Field):
     """Class for address field"""
@@ -87,9 +73,6 @@ class Address(Field):
 
     def __str__(self):
         return f"{self.value}"
-
-
-# Клас для запису в книзі
 
 
 class Record:
@@ -103,21 +86,18 @@ class Record:
         self.email: Email | None = None
         self.address: Address | None = None
 
-    # Метод: додає телефон в словник
     def add_phone(self, phone: str, info: str):
         """Adds phone and additional info to the Record"""
 
         phone = phone.strip()
         self.phones.data[phone] = Phone(phone, info)
 
-    # Метод: видаляє телефон з словника
     def remove_phone(self, phone: str):
         """Removes phone from the Record"""
 
         phone = phone.strip()
         del self.phones.data[phone]
 
-    # Метод: змінює телефон в словнику
     def edit_phone(self, old_phone: str, new_phone: str, info: str):
         """Changes phone in the Record from old_phone to new_phone"""
 
@@ -126,7 +106,6 @@ class Record:
         del self.phones.data[old_phone]
         self.phones.data[new_phone] = Phone(new_phone, info)
 
-    # Метод: шукає телефон в словнику
     def find_phone(self, phone: str) -> Phone | None:
         """Finds phone in the Record and returns it, if not found returns None"""
 
@@ -169,7 +148,6 @@ class AddressBook(UserDict):
         name = name.strip().lower()
         return self.data.get(name, None)
 
-    # Метод: видаляє запис з книги
     def remove_record(self, name: str):
         """Removes Record from the Address Book by name"""
 
