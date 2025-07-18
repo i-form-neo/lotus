@@ -2,6 +2,9 @@
 requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["lotus_bot"]
+
 [project]
 name = "lotus-bot"
 version = "1.0"
