@@ -5,7 +5,6 @@ build-backend = "hatchling.build"
 [project]
 name = "lotus-bot"
 version = 1.0
-dynamic = ["version"]
 
 authors = [
     { name="Youry Harchenko", email="youry@ukr.net" },
