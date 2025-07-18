@@ -21,6 +21,7 @@ keywords = ["lotus", "bot", "contacts", "notes"]
 readme = "README.md"
 
 dependencies = [
+    "appdirs==1.4.4",
     "click==8.2.1",
     "markdown-it-py==3.0.0",
     "mdurl==0.1.2",
