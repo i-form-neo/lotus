@@ -1,12 +1,14 @@
 """Module for address book with phones and birthdays for contacts"""
+from __future__ import annotations
 
 from collections import UserDict
+from datetime import datetime
+from datetime import timedelta
 from typing import Dict
-from datetime import datetime, timedelta
 
 from field import Field
-from verification_phone_number import is_valid_ukrainian_phone
 from verification_email import is_valid_email
+from verification_phone_number import is_valid_ukrainian_phone
 
 
 class Name(Field):
@@ -35,7 +37,7 @@ class Phones(UserDict):
     """Class for Phone field"""
 
     def __str__(self):
-        return ' '.join([f"{v}" for v in self.data.values()])
+        return " ".join([f"{v}" for v in self.data.values()])
 
 
 class Birthday(Field):
@@ -147,7 +149,7 @@ class AddressBook(UserDict):
 
         name = name.strip().lower()
         return self.data.get(name, None)
-    
+
     def find_record_by_phone(self, phone: str) -> Record | None:
         """Finds and returns Record in the Address Book by phone"""
 
@@ -155,7 +157,7 @@ class AddressBook(UserDict):
             if phone in v.phones:
                 return self.data.get(k, None)
         return None
-    
+
     def find_record_by_email(self, email: str) -> Record | None:
         """Finds and returns Record in the Address Book by email"""
 
@@ -208,13 +210,20 @@ class AddressBook(UserDict):
 
                 if congratulation_date.weekday() > 4:
                     congratulation_date += timedelta(
-                        days=7 - congratulation_date.weekday())
+                        days=7 - congratulation_date.weekday()
+                    )
                 return f"{record.name}: congratulation date: {congratulation_date.strftime('%d.%m.%Y')}"
             else:
                 return ""
 
         # Формуємо список привітань на наступні n_day днів
-        return '\n'.join([make_congratulation_date(record) for record in self.data.values() if birthday_in_interval(record, n_day)])
+        return "\n".join(
+            [
+                make_congratulation_date(record)
+                for record in self.data.values()
+                if birthday_in_interval(record, n_day)
+            ]
+        )
 
     def __str__(self):
-        return '\n'.join(str(rec) for rec in self.data.values())
+        return "\n".join(str(rec) for rec in self.data.values())

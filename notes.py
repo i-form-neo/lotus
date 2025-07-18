@@ -1,7 +1,10 @@
 """Module for notebook with notes"""
+from __future__ import annotations
 
-from collections import UserDict, UserList
-from datetime import datetime#, timedelta
+from collections import UserDict
+from collections import UserList
+from datetime import datetime  # , timedelta
+
 from field import Field
 
 # Клас для поля Title
@@ -13,6 +16,7 @@ class Title(Field):
     def __str__(self):
         return self.value
 
+
 # Клас для поля Note
 
 
@@ -22,11 +26,12 @@ class Note(Field):
     def __str__(self):
         return self.value
 
+
 # Клас для тегів
 
 
 class Tags(UserList):
-    """ Клас Tags - представляє список унікальних тегів"""
+    """Клас Tags - представляє список унікальних тегів"""
 
     def __init__(self, tag_string=""):
         initial_tags = tag_string.split(",") if tag_string else []
@@ -60,12 +65,13 @@ class Tags(UserList):
     def __str__(self):
         return ", ".join(self.data)
 
+
 # Клас для нотатки
 
 
 class NoteRecord:
     """
-    Клас NoteRecord представляє запис однієї нотатки. 
+    Клас NoteRecord представляє запис однієї нотатки.
     Поле id реалізовано за допомогою атрибуту класа.
     - text - обов'язковий, текст нотатки
     - title - необов'язковий, заголовок нотатки
@@ -84,10 +90,10 @@ class NoteRecord:
         self.tags = Tags(tags if tags else "")
 
     def modify(self, new_title=None, new_text=None, tags=None):
-        """ метод для редагування нотатки
+        """метод для редагування нотатки
         - new_title - оновлений заголовок нотатки
         - new_text - оновлений текст нотатки
-        - tags - теги додаються, можна додати декілька 
+        - tags - теги додаються, можна додати декілька
         якщо параметр не вказаний, то поле не оновлюється
         - поле date_modified в будь якому разі оновлюється на поточну дату
         """
@@ -100,24 +106,28 @@ class NoteRecord:
         self.date_modified = datetime.now()
 
     def remove_tag(self, tag: str):
-        """ видалення тегу з об'єкту NoteRecord """
+        """видалення тегу з об'єкту NoteRecord"""
         if tag:
             self.tags.remove_one(tag)
 
     def __str__(self):
-        return (f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
-                f"Created: {self.date_created}\nModified: {self.date_modified}\n"
-                f"Tags: {self.tags.data}")
+        return (
+            f"ID: {self.id}\nTitle: {self.title}\nText: {self.text}\n"
+            f"Created: {self.date_created}\nModified: {self.date_modified}\n"
+            f"Tags: {self.tags.data}"
+        )
+
 
 # Клас для індексу
 
 
 class TagIndex:
     """
-    Підтримка індексації по тегам. 
+    Підтримка індексації по тегам.
     модель словник де ключі - назви тегів,
     а значення список id заміток, яка містить тег
     """
+
     def __init__(self):
         self.index = {}
 
@@ -135,13 +145,13 @@ class TagIndex:
                     del self.index[tag]
 
     def add_tag(self, note_id, tag):
-        """ додає нотатку у індекс за тегом tag."""
+        """додає нотатку у індекс за тегом tag."""
         ids = self.index.setdefault(tag, [])
         if note_id not in ids:
             ids.append(note_id)
 
     def remove_tag(self, note_id, tag):
-        """ видалення ID нотатки з списку для відповідного тега tag """
+        """видалення ID нотатки з списку для відповідного тега tag"""
         ids = self.index.get(tag, [])
         if note_id in ids:
             ids.remove(note_id)
@@ -156,12 +166,13 @@ class TagIndex:
         """повертає весь індекс."""
         return self.index
 
+
 # Клас для списка нотаток
 
 
 class NotesBook(UserDict):
     """
-    Клас NotesBook представляє записник. 
+    Клас NotesBook представляє записник.
     add_note() - додає замітку
     search_by_tags() - пошук заміток по тегам
     delete_note() - видалення замітки по id
@@ -174,7 +185,7 @@ class NotesBook(UserDict):
 
     def add_note(self, record: NoteRecord):
         """
-        Метод add_note() приймає один агрумент типу NoteRecord, 
+        Метод add_note() приймає один агрумент типу NoteRecord,
         додає замітку
         """
         self.data[record.id] = record

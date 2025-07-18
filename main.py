@@ -1,28 +1,33 @@
 """Main module for assistant bot"""
+from __future__ import annotations
 
-from typing import Dict, Tuple, List
-
-import pickle
 import pathlib
+import pickle
 import shlex
+from typing import Dict
+from typing import List
+from typing import Tuple
 
-from rich.console import Console
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
-from contacts import AddressBook, Record
-from notes import NotesBook, NoteRecord
+from rich.console import Console
+
+from contacts import AddressBook
+from contacts import Record
+from notes import NoteRecord
+from notes import NotesBook
 from rich_table_printer import print_as_rich_table
 
 
 def read_dict(path: pathlib.Path) -> Dict[str, Record]:
-    """ Заванатажує довідник з файла
+    """Заванатажує довідник з файла
 
     path -- шлях до довідника
     """
     if path.exists():
         try:
-            with open(path, 'rb') as f:
+            with open(path, "rb") as f:
                 return pickle.load(f)
         except Exception as ex:
             print(f"Loading Contacts error: {ex}, create new dictionary")
@@ -33,7 +38,7 @@ def read_dict(path: pathlib.Path) -> Dict[str, Record]:
 
 
 def write_dict(path: pathlib.Path, dictionary: Dict[str, Record]):
-    """ Записує довідник в файл
+    """Записує довідник в файл
 
     path -- шлях до довідника
     dict -- словник довідника
@@ -62,7 +67,7 @@ commands = {
     "quit": 0,
     "close": 0,
     "hello": 0,
-    "help": 0
+    "help": 0,
 }
 
 # Команди та їхнє використання
@@ -73,26 +78,26 @@ command_usage = {
     "add-address": 'Add or update address: name address (add-address "John Dou" "Kyiv, Ukraine")',
     "change": 'Update phone: name old-phone new-phone (change "John Dou" +380123334455 +380245556677)',
     "remove": 'Remove contact: name (remove "John Dou")',
-    "all": 'Print all contacts: all [sort-by-column, desc|reverse|true] (all birthday desc)',
+    "all": "Print all contacts: all [sort-by-column, desc|reverse|true] (all birthday desc)",
     "phone": 'Print phones: name (phone "John Dou")',
     "show-birthday": 'Print birthday: name (show-birthday "John Dou")',
-    "birthdays": 'Print birthdays next n day: n_day (birthdays 10)',
-    "find-by-phone":  'Find and print contact by phone: phone (find-by-phone +380123334455)',
-    "find-by-email":  'Find and print contact by email: email (find-by-email john.dou@example.com)',
+    "birthdays": "Print birthdays next n day: n_day (birthdays 10)",
+    "find-by-phone": "Find and print contact by phone: phone (find-by-phone +380123334455)",
+    "find-by-email": "Find and print contact by email: email (find-by-email john.dou@example.com)",
     "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
-    "all-notes": 'Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)',
-    "exit": 'Close bot',
-    "quit": 'Close bot',
-    "close": 'Close bot',
-    "hello": 'Hello bot',
-    "help": 'Print this usage'
+    "all-notes": "Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)",
+    "exit": "Close bot",
+    "quit": "Close bot",
+    "close": "Close bot",
+    "hello": "Hello bot",
+    "help": "Print this usage",
 }
 
 
 def main():
     """Entry point for Assistant Bot"""
     script_path = pathlib.Path(__file__)
-    dict_path = script_path.with_name('contacts.pickle')
+    dict_path = script_path.with_name("contacts.pickle")
     dictionary = read_dict(dict_path)
 
     console = Console()
@@ -102,19 +107,23 @@ def main():
     # Декоратор записує словник у файл при вдалому завершенні функції
     def writer(func):
         def inner(name: str, *args) -> Tuple[bool, str]:
-            
+
             res = func(name, *args)
             if res[0]:
                 write_dict(dict_path, dictionary)
             return res
+
         return inner
 
     # Декоратор виводить повідомлення про результат операції
     def verbose(func):
-        def inner(name: str | None = None, phone: str | None = None, phone2: str | None = None) -> Tuple[bool, str]:
+        def inner(
+            name: str | None = None, phone: str | None = None, phone2: str | None = None
+        ) -> Tuple[bool, str]:
             res = func(name, phone, phone2)
             console.print(res[1])
             return res
+
         return inner
 
     # Декоратор приводить команди до нижнього регістру
@@ -128,17 +137,19 @@ def main():
                 if res[0] in commands:
                     if commands[res[0]] <= arity:
                         for i in range(arity):
-                            res[i+1] = res[i+1].strip()
+                            res[i + 1] = res[i + 1].strip()
                     else:
                         console.print(
-                            f"[bold red]Command '{res[0]}' expected {commands[res[0]]}, but takes {arity} parameter(s)[/bold red]")
-                        res = ['error']
+                            f"[bold red]Command '{res[0]}' expected {commands[res[0]]}, but takes {arity} parameter(s)[/bold red]"
+                        )
+                        res = ["error"]
                 else:
                     console.print(
-                        f"[bold red]Unexpected command: {' '.join(res)}[/bold red]")
-                    res = ['error']
+                        f"[bold red]Unexpected command: {' '.join(res)}[/bold red]"
+                    )
+                    res = ["error"]
             else:
-                res = ['error']
+                res = ["error"]
 
             return res
 
@@ -167,7 +178,7 @@ def main():
             return True, f"Contact {name}: {old_phone} changed to {new_phone}"
         else:
             return False, f"[bold red]Contact {name} not found[/bold red]"
-        
+
     # Handler: remove name  - видаляє існуючий контакт
     @writer
     @verbose
@@ -223,26 +234,34 @@ def main():
 
         print_as_rich_table(
             columns=[
-                {"name": "Name", "min_width": 20, "max_width": 30,
-                 "no_wrap": False},
+                {"name": "Name", "min_width": 20, "max_width": 30, "no_wrap": False},
                 {"name": "Birthday", "min_width": 10},
-                {"name": "Address", "justify": "right",
-                    "no_wrap": False, "max_width": 30},
-                {"name": "Phones", "justify": "right",
-                    "no_wrap": False, "max_width": 16},
-                {"name": "Email", "justify": "right"}
+                {
+                    "name": "Address",
+                    "justify": "right",
+                    "no_wrap": False,
+                    "max_width": 30,
+                },
+                {
+                    "name": "Phones",
+                    "justify": "right",
+                    "no_wrap": False,
+                    "max_width": 16,
+                },
+                {"name": "Email", "justify": "right"},
             ],
             rows=[
-                [record.name,
-                 record.birthday.value if record.birthday else "",
-                 record.address,
-                 record.phones,
-                 record.email]
+                [
+                    record.name,
+                    record.birthday.value if record.birthday else "",
+                    record.address,
+                    record.phones,
+                    record.email,
+                ]
                 for record in book.values()
             ],
             sort_by=sort_by,
-            reverse_sort=reverse_sort
-
+            reverse_sort=reverse_sort,
         )
         return True, "[bold green]OK[/bold green]\n"
 
@@ -285,7 +304,7 @@ def main():
             return True, "[bold green]OK[/bold green]\n"
         else:
             return True, "[bold green]Empty list[/bold green]\n"
-        
+
     # Handler: find-by-phone - шукає та виводить контакт за телефоном
     @verbose
     def find_by_phone(phone: str, *args):
@@ -295,7 +314,7 @@ def main():
             return True, "OK\n"
         else:
             return False, f"[bold red]Contact with phone {phone} not found[/bold red]"
-        
+
     # Handler: find-by-email - шукає та виводить контакт за email
     @verbose
     def find_by_email(email: str, *args):
@@ -305,7 +324,6 @@ def main():
             return True, "OK\n"
         else:
             return False, f"[bold red]Contact with email {email} not found[/bold red]"
-
 
     # Handler: add-note title text - додає нову нотатку
     def add_note(title: str, *args) -> Tuple[bool, str]:
@@ -320,31 +338,41 @@ def main():
             columns=[
                 {"name": "Id", "min_width": 2, "max_width": 6},
                 {"name": "Title", "min_width": 10, "max_width": 20},
-                {"name": "Text", "justify": "left",
-                    "no_wrap": False, "min_width": 30},
-                {"name": "Created", "justify": "right",
-                    "no_wrap": False, "max_width": 12},
-                {"name": "Modified", "justify": "right",
-                    "no_wrap": False, "max_width": 12}
+                {"name": "Text", "justify": "left", "no_wrap": False, "min_width": 30},
+                {
+                    "name": "Created",
+                    "justify": "right",
+                    "no_wrap": False,
+                    "max_width": 12,
+                },
+                {
+                    "name": "Modified",
+                    "justify": "right",
+                    "no_wrap": False,
+                    "max_width": 12,
+                },
             ],
             rows=[
-                [id,
-                 record.title,
-                 record.text,
-                 record.date_created,
-                 record.date_modified]
+                [
+                    id,
+                    record.title,
+                    record.text,
+                    record.date_created,
+                    record.date_modified,
+                ]
                 for id, record in notes_book.items()
             ],
             sort_by=sort_by,
-            reverse_sort=reverse_sort
+            reverse_sort=reverse_sort,
         )
 
-    history_path = script_path.with_name('.history')
+    history_path = script_path.with_name(".history")
     history = FileHistory(history_path)
     completer = WordCompleter(list(commands.keys()))
 
     session = PromptSession(
-        history=history, completer=completer, reserve_space_for_menu=True)
+        history=history, completer=completer, reserve_space_for_menu=True
+    )
 
     @validate
     def parse_input(msg_prompt: str, *args) -> List[str]:
@@ -359,8 +387,7 @@ def main():
         for k, v in commands.items():
             console.print(f"    {k}/{v} -- {command_usage.get(k, '')}")
 
-    console.print(
-        "[bold green]Welcome to the assistant bot![/bold green]")
+    console.print("[bold green]Welcome to the assistant bot![/bold green]")
     print_help()
     console.print("Press [yellow]Tab[/yellow] for auto-completion.")
 
@@ -368,47 +395,47 @@ def main():
         try:
             repl = parse_input("Enter a command: ")
             match repl:
-                case ['add-phone', name, phone]:
+                case ["add-phone", name, phone]:
                     add(name, phone)
-                case ['add-birthday', name, birthday]:
+                case ["add-birthday", name, birthday]:
                     add_birthday(name, birthday)
-                case ['add-email', name, email]:
+                case ["add-email", name, email]:
                     add_email(name, email)
-                case ['add-address', name, address]:
+                case ["add-address", name, address]:
                     add_address(name, address)
-                case ['change', name, old_phone, new_phone]:
+                case ["change", name, old_phone, new_phone]:
                     change(name, old_phone, new_phone)
-                case ['remove', name]:
+                case ["remove", name]:
                     remove(name)
-                case ['all', *args]:
+                case ["all", *args]:
                     print_all(*args)
-                case ['phone', name]:
+                case ["phone", name]:
                     print_phone(name)
-                case ['show-birthday', name]:
+                case ["show-birthday", name]:
                     show_birthday(name)
-                case ['birthdays', n_day]:
+                case ["birthdays", n_day]:
                     birthdays(n_day)
-                case ['find-by-phone', phone]:
+                case ["find-by-phone", phone]:
                     find_by_phone(phone)
-                case ['find-by-email', email]:
+                case ["find-by-email", email]:
                     find_by_email(email)
-                case ['add-note', title, *args]:
+                case ["add-note", title, *args]:
                     add_note(title, *args)
-                case ['all-notes', *args]:
+                case ["all-notes", *args]:
                     all_notes(*args)
-                case ['exit'] | ['quit'] | ['close']:
+                case ["exit"] | ["quit"] | ["close"]:
                     console.print("[bold green]Good bye![/bold green]")
                     break
-                case ['hello']:
-                    console.print(
-                        "[bold green]How can I help you?[/bold green]")
-                case ['help']:
+                case ["hello"]:
+                    console.print("[bold green]How can I help you?[/bold green]")
+                case ["help"]:
                     print_help()
-                case ['error']:
+                case ["error"]:
                     console.print("")
                 case _:
                     console.print(
-                        f"[bold red]Unexpected command: {' '.join(repl)}[/bold red]")
+                        f"[bold red]Unexpected command: {' '.join(repl)}[/bold red]"
+                    )
         except Exception as ex:
             console.print(f"[bold red]{ex}[/bold red]")
 
