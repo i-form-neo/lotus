@@ -77,7 +77,7 @@ Lotus provides a user-friendly command-line interface. Here's a list of availabl
 | birthdays	num-of-days          | birthdays 10                                  | Lists upcoming birthdays within the next N days.             |
 | find-by-phone	phone            | find-by-phone +380123456789                   | Finds and displays a contact by phone number.                |
 | find-by-email email	         | find-by-email john.doe@example.com            | Finds and displays a contact by email.                       |
-| add-note title text            | add-note "Meeting Notes" "Discuss project proposal" | Adds a new note with a title and text.                 |
+| add-note title text [comma-separated-tags]| add-note "Meeting Notes" "Discuss project proposal" tag1,meeting| Adds a new note with a title, text and optionally tags.|
 | add-tag id tag                 | add-tag 1 important                           | Adds a tag to an existing note.                              |
 | find-by-tag tag                | find-by-tag important                         | Fiind all notes with the tag.                                |
 | find-by-title title            | find-by-tag important                         | Fiind all notes with the tag.                                |

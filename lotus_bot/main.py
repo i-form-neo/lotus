@@ -92,7 +92,7 @@ command_usage = {
     "birthdays": "Print birthdays next n day: n_day (birthdays 10)",
     "find-by-phone": "Find and print contact by phone: phone (find-by-phone +380123334455)",
     "find-by-email": "Find and print contact by email: email (find-by-email john.dou@example.com)",
-    "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
+    "add-note": 'Add new note: title text [tags] (add-note "New note" "text to be noted" tag,new,note)',
     "edit-note": 'Update note: id title text (edit-note 1 "Edited title" "Edited text to be noted")',
     "remove-note": "Remove note: id (remove-note 1)",
     "all-notes": "Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)",
@@ -355,7 +355,11 @@ def main():
     @writer
     @verbose
     def add_note(title: str, *args) -> Tuple[bool, str]:
-        record = NoteRecord(title, args[0])
+        tags = None
+        if len(args) > 1:
+            tags = args[1]
+
+        record = NoteRecord(title, args[0], tags)
         notes_book.add_note(record)
         return True, f"Note '{title}' added"
 
@@ -385,6 +389,12 @@ def main():
                 {"name": "Title", "min_width": 10, "max_width": 20},
                 {"name": "Text", "justify": "left", "no_wrap": False, "min_width": 30},
                 {
+                    "name": "Tags",
+                    "justify": "center",
+                    "no_wrap": False,
+                    "min_width": 10,
+                },
+                {
                     "name": "Created",
                     "justify": "right",
                     "no_wrap": False,
@@ -402,6 +412,7 @@ def main():
                     id,
                     record.title,
                     record.text,
+                    record.tags,
                     record.date_created,
                     record.date_modified,
                 ]
