@@ -111,7 +111,7 @@ def main():
 
     data_path = pathlib.Path(user_data_dir(app_name, app_author))
     if not data_path.exists():
-        data_path.mkdirs()
+        data_path.mkdir(parents=True, exist_ok=True)
     elif not data_path.is_dir():
         console.print(f"[bold red]Path {data_path} is not dir![/bold red]")
         sys.exit(1)
