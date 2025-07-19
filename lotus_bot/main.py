@@ -68,6 +68,8 @@ commands = {
     "find-by-phone": 1,
     "find-by-email": 1,
     "add-note": 2,
+    "edit-note": 3,
+    "remove-note": 1,
     "all-notes": 0,
     "exit": 0,
     "quit": 0,
@@ -91,6 +93,8 @@ command_usage = {
     "find-by-phone": "Find and print contact by phone: phone (find-by-phone +380123334455)",
     "find-by-email": "Find and print contact by email: email (find-by-email john.dou@example.com)",
     "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
+    "edit-note": 'Update note: id title text (edit-note 1 "Edited title" "Edited text to be noted")',
+    "remove-note": 'Remove note: id (remove-note 1)',
     "all-notes": "Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)",
     "exit": "Close bot",
     "quit": "Close bot",
@@ -354,6 +358,22 @@ def main():
         record = NoteRecord(title, args[0])
         notes_book.add_note(record)
         return True, f"Note '{title}' added"
+    
+    # Handler: edit-note id title text - додає нову нотатку
+
+    @writer
+    @verbose
+    def edit_note(id: str, title: str, text: str, *args) -> Tuple[bool, str]:
+        notes_book.edit_note(int(id), title, text)
+        return True, f"Note '{title}' updated"
+    
+    # Handler: edit-note id title text - додає нову нотатку
+
+    @writer
+    @verbose
+    def remove_note(id: str, *args) -> Tuple[bool, str]:
+        notes_book.delete_note(int(id))
+        return True, f"Note '{title}' removed"
 
     # Handler: all-notes виводить всі нотатки у вигляді таблиці
     def all_notes(*args) -> Tuple[bool, str]:
@@ -447,6 +467,10 @@ def main():
                     find_by_email(email)
                 case ["add-note", title, *args]:
                     add_note(title, *args)
+                case ["edit-note", id, title, text, *args]:
+                    edit_note(id, title, text, *args)
+                case ["remove-note", id]:
+                    remove_note(id)
                 case ["all-notes", *args]:
                     all_notes(*args)
                 case ["exit"] | ["quit"] | ["close"]:
