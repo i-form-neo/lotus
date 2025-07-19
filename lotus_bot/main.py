@@ -94,7 +94,7 @@ command_usage = {
     "find-by-email": "Find and print contact by email: email (find-by-email john.dou@example.com)",
     "add-note": 'Add new note: title text (add-note "New note" "text to be noted")',
     "edit-note": 'Update note: id title text (edit-note 1 "Edited title" "Edited text to be noted")',
-    "remove-note": 'Remove note: id (remove-note 1)',
+    "remove-note": "Remove note: id (remove-note 1)",
     "all-notes": "Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)",
     "exit": "Close bot",
     "quit": "Close bot",
@@ -111,7 +111,7 @@ def main():
 
     data_path = pathlib.Path(user_data_dir(app_name, app_author))
     if not data_path.exists():
-        data_path.mkdir()
+        data_path.mkdir(parents=True, exist_ok=True)
     elif not data_path.is_dir():
         console.print(f"[bold red]Path {data_path} is not dir![/bold red]")
         sys.exit(1)
@@ -358,7 +358,7 @@ def main():
         record = NoteRecord(title, args[0])
         notes_book.add_note(record)
         return True, f"Note '{title}' added"
-    
+
     # Handler: edit-note id title text - додає нову нотатку
 
     @writer
@@ -366,7 +366,7 @@ def main():
     def edit_note(id: str, title: str, text: str, *args) -> Tuple[bool, str]:
         notes_book.edit_note(int(id), title, text)
         return True, f"Note '{title}' updated"
-    
+
     # Handler: edit-note id title text - додає нову нотатку
 
     @writer
