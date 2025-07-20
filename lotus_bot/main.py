@@ -68,9 +68,14 @@ commands = {
     "find-by-phone": 1,
     "find-by-email": 1,
     "add-note": 2,
+    "add-tags": 2,
+    "remove-tag": 2,
     "edit-note": 3,
+    "edit-note-text": 2,
     "remove-note": 1,
     "all-notes": 0,
+    "notes-by-tags": 1,
+    "notes-by-text": 1,
     "exit": 0,
     "quit": 0,
     "close": 0,
@@ -93,9 +98,14 @@ command_usage = {
     "find-by-phone": "Find and print contact by phone: phone (find-by-phone +380123334455)",
     "find-by-email": "Find and print contact by email: email (find-by-email john.dou@example.com)",
     "add-note": 'Add new note: title text [tags] (add-note "New note" "text to be noted" tag,new,note)',
+    "add-tags": "Add tags to the note: id tags (add-tags 1 tag1,tag2,tag3)",
+    "remove-tag": "Remove tag from the note: id tag (remove-tag 1 tag1)",
     "edit-note": 'Update note: id title text (edit-note 1 "Edited title" "Edited text to be noted")',
+    "edit-note-text": 'Update note: id text (edit-note-text 1 "Edited text to be noted")',
     "remove-note": "Remove note: id (remove-note 1)",
     "all-notes": "Print all notes: all-notes [sort-by-column, desc|reverse|true] (all-notes created desc)",
+    "notes-by-tags": "Print notes filtered by tags: tags [sort-by-column, desc|reverse|true] (notes-by-tag important,other title desc)",
+    "notes-by-text": "Print notes containing text: text [sort-by-column, desc|reverse|true] (notes-by-text space title desc)",
     "exit": "Close bot",
     "quit": "Close bot",
     "close": "Close bot",
@@ -351,7 +361,6 @@ def main():
             return False, f"[bold red]Contact with email {email} not found[/bold red]"
 
     # Handler: add-note title text - додає нову нотатку
-
     @writer
     @verbose
     def add_note(title: str, *args) -> Tuple[bool, str]:
@@ -363,25 +372,62 @@ def main():
         notes_book.add_note(record)
         return True, f"Note '{title}' added"
 
+    @writer
+    @verbose
+    def add_tags(id: str, tags: str, *args) -> Tuple[bool, str]:
+        result = notes_book.edit_note(int(id), tags=tags)
+        if not result:
+            return False, f"[bold red]Note with id {id} not found[/bold red]"
+        else:
+            return True, f"Note '{id}' updated"
+
+    @writer
+    @verbose
+    def remove_tag(id: str, tag: str, *args) -> Tuple[bool, str]:
+        result = notes_book.remove_tag(int(id), tag=tag)
+        if not result:
+            return False, f"[bold red]Note with id {id} not found[/bold red]"
+        else:
+            return True, f"Note '{id}' updated"
+
     # Handler: edit-note id title text - додає нову нотатку
 
     @writer
     @verbose
     def edit_note(id: str, title: str, text: str, *args) -> Tuple[bool, str]:
-        notes_book.edit_note(int(id), title, text)
-        return True, f"Note '{title}' updated"
+        result = notes_book.edit_note(int(id), title, text)
+        if not result:
+            return False, f"[bold red]Note with id {id} not found[/bold red]"
+        else:
+            return True, f"Note '{id}' updated"
 
-    # Handler: edit-note id title text - додає нову нотатку
+    # Handler: edit-note-text id title text - додає нову нотатку
+    @writer
+    @verbose
+    def edit_note_text(id: str, text: str, *args) -> Tuple[bool, str]:
+        result = notes_book.edit_note(int(id), new_text=text)
+        if not result:
+            return False, f"[bold red]Note with id {id} not found[/bold red]"
+        else:
+            return True, f"Note '{id}' updated"
 
+    # Handler: remove-note id - видаляє  нотатку
     @writer
     @verbose
     def remove_note(id: str, *args) -> Tuple[bool, str]:
         notes_book.delete_note(int(id))
-        return True, f"Note '{title}' removed"
+        return True, f"Note '{id}' removed"
 
     # Handler: all-notes виводить всі нотатки у вигляді таблиці
-    def all_notes(*args) -> Tuple[bool, str]:
+    def all_notes(*args, by_tags=None, by_text=None) -> Tuple[bool, str]:
         sort_by, reverse_sort = sort_params(args)
+        filtered_records = {}
+        if by_tags:
+            filtered_records = notes_book.search_by_tags(by_tags)
+        elif by_text:
+            filtered_records = notes_book.search_by_notes_text(by_text)
+        else:
+            filtered_records = notes_book.values()
 
         print_as_rich_table(
             columns=[
@@ -409,14 +455,14 @@ def main():
             ],
             rows=[
                 [
-                    id,
+                    record.id,
                     record.title,
                     record.text,
                     record.tags,
                     record.date_created,
                     record.date_modified,
                 ]
-                for id, record in notes_book.items()
+                for record in filtered_records
             ],
             sort_by=sort_by,
             reverse_sort=reverse_sort,
@@ -435,7 +481,6 @@ def main():
     def parse_input(msg_prompt: str, *args) -> List[str]:
         msg = session.prompt(msg_prompt)
 
-        # cmd = msg.split()
         cmd = shlex.split(msg)
         return cmd
 
@@ -478,12 +523,22 @@ def main():
                     find_by_email(email)
                 case ["add-note", title, *args]:
                     add_note(title, *args)
+                case ["add-tags", id, tags, *args]:
+                    add_tags(id, tags, *args)
+                case ["remove-tag", id, tag, *args]:
+                    remove_tag(id, tag, *args)
                 case ["edit-note", id, title, text, *args]:
                     edit_note(id, title, text, *args)
+                case ["edit-note-text", id, text, *args]:
+                    edit_note_text(id, text, *args)
                 case ["remove-note", id]:
                     remove_note(id)
                 case ["all-notes", *args]:
                     all_notes(*args)
+                case ["notes-by-tags", tags, *args]:
+                    all_notes(*args, by_tags=tags)
+                case ["notes-by-text", text, *args]:
+                    all_notes(*args, by_text=text)
                 case ["exit"] | ["quit"] | ["close"]:
                     console.print("[bold green]Good bye![/bold green]")
                     break

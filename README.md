@@ -78,10 +78,13 @@ Lotus provides a user-friendly command-line interface. Here's a list of availabl
 | find-by-phone	phone            | find-by-phone +380123456789                   | Finds and displays a contact by phone number.                |
 | find-by-email email	         | find-by-email john.doe@example.com            | Finds and displays a contact by email.                       |
 | add-note title text [comma-separated-tags]| add-note "Meeting Notes" "Discuss project proposal" tag1,meeting| Adds a new note with a title, text and optionally tags.|
-| add-tag id tag                 | add-tag 1 important                           | Adds a tag to an existing note.                              |
-| find-by-tag tag                | find-by-tag important                         | Fiind all notes with the tag.                                |
-| find-by-title title            | find-by-tag important                         | Fiind all notes with the tag.                                |
-| edit-note id new-text          | edit-note 1 "Update project proposal"         | Updates a note with a new text.                              |
+| edit-note id title text        | edit-note 1 "Edited title" "Edited text to be noted"| Edit title and text for the note                       |
+| edit-note-text id text         | edit-note-text 1 "Edited text to be noted"    | Edit text for the note                                       |
+| add-tags id tags               | add-tags 1 important,meeting                  | Adds tags (comma-separated) to the existing note.            |
+| remove-tag id tag              | remove-tag 1 important.                       | Removes tag (comma-separated) from the existing note.        |
+| notes-by-tags tags             | notes-by-tags important                       | Find all notes with the tag.                                 |
+| notes-by-text text             | notes-by-text important                       | Find all notes with the text or title.                       |
+| edit-note id new-title new-text| edit-note 1 "updated title" "updated text"    | Updates a note with a new title and text.                    |
 | all-notes [sort-by-column] [desc/reverse/true] | all-notes title desc.         | Displays all notes, optionally sorted.                       |
 | help                           | help                                          | Displays this help message.                                  |
 | exit / quit / close            | exit                                          | Exits the application.                                       |

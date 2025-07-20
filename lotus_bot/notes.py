@@ -128,8 +128,10 @@ class TagIndex:
     а значення список id заміток, яка містить тег
     """
 
-    def __init__(self):
+    def __init__(self, dictionary):
         self.index = {}
+        for record in dictionary.values():
+            self.add_record_to_index(record)
 
     def add_record_to_index(self, record):
         """індексує нотатку по тегу"""
@@ -182,7 +184,7 @@ class NotesBook(UserDict):
     def __init__(self, dictionary):
         super().__init__()
         self.data = dictionary
-        self.tag_index = TagIndex()
+        self.tag_index = TagIndex(dictionary)
 
     def __next_id(self) -> int:
         if len(self.data) == 0:
@@ -227,6 +229,17 @@ class NotesBook(UserDict):
 
         # список об’єктів NoteRecord за знайденими id
         return [self.data[nid] for nid in common_ids if nid in self.data]
+
+    def search_by_notes_text(self, text: str):
+        """
+        Повертає список об'єктів NoteRecord, які містять текст .
+        """
+        text = text.lower()
+        return [
+            record
+            for record in self.data.values()
+            if text in record.text.value.lower() or text in record.title.value.lower()
+        ]
 
     def delete_note(self, note_id: int):
         """
